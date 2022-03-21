@@ -1,5 +1,10 @@
 #General helper function for going Byte String to Msg
-def bytes2Msg(byteList):
+def bytes2Msg(byteList, logger='None'):
+    
+    #Log if desired
+    if logger != 'None':
+        logger.writerow(byteList)
+        
     msg = 0
     #Loop through the bytes to make a msg
     for b in byteList:
@@ -11,7 +16,7 @@ def bytes2Msg(byteList):
     return msg
 
 #General helper function for going Msg to Byte String
-def msg2Bytes(msg):
+def msg2Bytes(msg, logger='None'):
     #Start empty and recursively add
     byteList = []
     while msg > 0:
@@ -20,6 +25,10 @@ def msg2Bytes(msg):
     #Reverse it
     byteList.reverse() #b/c want small byte last
     
+    #Log if desired
+    if logger != 'None':
+        logger.writerow(byteList)
+        
     #And output!
     return byteList 
 
@@ -32,7 +41,7 @@ def getMsgType(msg):
     #And output. This is the last Byte (hence the msg Type
     return msg
 
-def makeMsgRouteDisc(origID, msgID, srcID, destID):
+def makeMsgRouteDisc(origID, msgID, srcID, destID, logger='None'):
     #Combines everything together into a message for sending
     
     #Build the Bytes - Total message is 6B
@@ -45,14 +54,14 @@ def makeMsgRouteDisc(origID, msgID, srcID, destID):
     byteList[5] = destID
 
     #And return the made msg
-    return bytes2Msg(byteList)
+    return bytes2Msg(byteList, logger)
     
-def readMsgRouteDisc(msg):
+def readMsgRouteDisc(msg, logger='None'):
     #Outputs in order origID, msgID, srcID, destID
     
     #Get the bytes
-    byteList = msg2Bytes(msg)
-
+    byteList = msg2Bytes(msg, logger)
+        
     # Build the message
     origID = byteList[1]
     msgID  = byteList[3] + 256*byteList[2]
@@ -62,7 +71,7 @@ def readMsgRouteDisc(msg):
     #And return
     return origID, msgID, srcID, destID
 
-def makeMsgRouteReply(origID, msgID, srcID, pathFromDest):
+def makeMsgRouteReply(origID, msgID, srcID, pathFromDest, logger='None'):
     #Combines everything together into a message for sending
     
     #Build the Bytes - Total message is 6B
@@ -75,16 +84,16 @@ def makeMsgRouteReply(origID, msgID, srcID, pathFromDest):
     byteList[5] = len(pathFromDest)
     for node in pathFromDest:
         byteList.append(node)
-
+        
     #And return the made msg
-    return bytes2Msg(byteList)
+    return bytes2Msg(byteList, logger)
     
-def readMsgRouteReply(msg):
+def readMsgRouteReply(msg, logger='None'):
     #Outputs in order origID, msgID, srcID, hopCount, pathFromDest
     
     #Get the bytes
-    byteList = msg2Bytes(msg)
-
+    byteList = msg2Bytes(msg, logger)
+        
     # Build the message
     origID = byteList[1]
     msgID  = byteList[3] + 256*byteList[2]
@@ -95,7 +104,7 @@ def readMsgRouteReply(msg):
     #And return
     return origID, msgID, srcID, hopCount, pathFromDest
 
-def makeMsgData(origID, msgID, srcID, pathFromDest):
+def makeMsgData(origID, msgID, srcID, pathFromDest, logger='None'):
     #Combines everything together into a message for sending
     
     #Build the Bytes - Total message is 6B
@@ -108,16 +117,16 @@ def makeMsgData(origID, msgID, srcID, pathFromDest):
     byteList[5] = len(pathFromDest)
     for node in pathFromDest:
         byteList.append(node)
-
+        
     #And return the made msg
-    return bytes2Msg(byteList)
+    return bytes2Msg(byteList, logger)
     
-def readMsgData(msg):
+def readMsgData(msg, logger='None'):
     #Outputs in order origID, msgID, srcID, hopCount, pathFromDest
     
     #Get the bytes
-    byteList = msg2Bytes(msg)
-
+    byteList = msg2Bytes(msg, logger)
+        
     # Build the message
     origID = byteList[1]
     msgID  = byteList[3] + 256*byteList[2]
