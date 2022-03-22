@@ -35,23 +35,36 @@ def msg2Bytes(msg, logger='None'):
 #General helper function for getting the message type
 def getMsgType(msg):
     #Only want to capture the last byte (highest value)
-    while msg > 255:
-        msg = msg // 256 #shift down a byte
+    #Also serves to check if messages are actually for us
+    minMsgLen = 7 #MAKE SURE TO UPDATE THIS: YOU'RE GONNA MESS THIS UP ZACH
     
-    #And output. This is the last Byte (hence the msg Type
+    lenCount = 1
+    msgLen = 0
+    while msg > 255:
+        msgLen = msg % 256 #will end up being the 2nd byte
+        msg = msg // 256 #shift down a byte
+        lenCount = lenCount + 1
+
+    if lenCount != msgLen or msgLen < minMsgLen: #It doesn't add up!
+        msg = 0 #throw it out
+        
+    #And output. This is the last Byte (hence the msg Type)
     return msg
 
 def makeMsgRouteDisc(origID, msgID, srcID, destID, logger='None'):
     #Combines everything together into a message for sending
+
+    msgLen = 7
     
     #Build the Bytes - Total message is 6B
-    byteList = [0] * 6
+    byteList = [0] * 7
     byteList[0] = 1
-    byteList[1] = origID
-    byteList[2] = 0 #Defined for consistency. Really just Byte4
-    byteList[3] = msgID #also counts as Byte 3
-    byteList[4] = srcID
-    byteList[5] = destID
+    byteList[1] = msgLen
+    byteList[2] = origID
+    byteList[3] = 0 #Defined for consistency. Really just Byte4
+    byteList[4] = msgID #also counts as Byte 3
+    byteList[5] = srcID
+    byteList[6] = destID
 
     #And return the made msg
     return bytes2Msg(byteList, logger)
@@ -63,25 +76,28 @@ def readMsgRouteDisc(msg, logger='None'):
     byteList = msg2Bytes(msg, logger)
         
     # Build the message
-    origID = byteList[1]
-    msgID  = byteList[3] + 256*byteList[2]
-    srcID  = byteList[4]
-    destID = byteList[5]
+    origID = byteList[2]
+    msgID  = byteList[4] + 256*byteList[3]
+    srcID  = byteList[5]
+    destID = byteList[6]
 
     #And return
     return origID, msgID, srcID, destID
 
 def makeMsgRouteReply(origID, msgID, srcID, pathFromDest, logger='None'):
     #Combines everything together into a message for sending
+
+    msgLen = 7 + len(pathFromDest)
     
     #Build the Bytes - Total message is 6B
-    byteList = [0] * 6
+    byteList = [0] * 7
     byteList[0] = 2
-    byteList[1] = origID
-    byteList[2] = 0 #Defined for consistency. Really just Byte4
-    byteList[3] = msgID #also counts as Byte 3
-    byteList[4] = srcID
-    byteList[5] = len(pathFromDest)
+    byteList[1] = msgLen
+    byteList[2] = origID
+    byteList[3] = 0 #Defined for consistency. Really just Byte4
+    byteList[4] = msgID #also counts as Byte 3
+    byteList[5] = srcID
+    byteList[6] = len(pathFromDest)
     for node in pathFromDest:
         byteList.append(node)
         
@@ -95,11 +111,11 @@ def readMsgRouteReply(msg, logger='None'):
     byteList = msg2Bytes(msg, logger)
         
     # Build the message
-    origID = byteList[1]
-    msgID  = byteList[3] + 256*byteList[2]
-    srcID  = byteList[4]
-    hopCount = byteList[5]
-    pathFromDest = byteList[6:] #and the rest
+    origID = byteList[2]
+    msgID  = byteList[4] + 256*byteList[3]
+    srcID  = byteList[5]
+    hopCount = byteList[6]
+    pathFromDest = byteList[7:] #and the rest
     
     #And return
     return origID, msgID, srcID, hopCount, pathFromDest
@@ -107,14 +123,17 @@ def readMsgRouteReply(msg, logger='None'):
 def makeMsgData(origID, msgID, srcID, pathFromDest, logger='None'):
     #Combines everything together into a message for sending
     
+    msgLen = 7 + len(pathFromDest)
+    
     #Build the Bytes - Total message is 6B
-    byteList = [0] * 6
+    byteList = [0] * 7
     byteList[0] = 3
-    byteList[1] = origID
-    byteList[2] = 0 #Defined for consistency. Really just Byte4
-    byteList[3] = msgID #also counts as Byte 3
-    byteList[4] = srcID
-    byteList[5] = len(pathFromDest)
+    byteList[1] = msgLen
+    byteList[2] = origID
+    byteList[3] = 0 #Defined for consistency. Really just Byte4
+    byteList[4] = msgID #also counts as Byte 3
+    byteList[5] = srcID
+    byteList[6] = len(pathFromDest)
     for node in pathFromDest:
         byteList.append(node)
         
@@ -128,11 +147,11 @@ def readMsgData(msg, logger='None'):
     byteList = msg2Bytes(msg, logger)
         
     # Build the message
-    origID = byteList[1]
-    msgID  = byteList[3] + 256*byteList[2]
-    srcID  = byteList[4]
-    hopCount = byteList[5]
-    pathFromDest = byteList[6:] #and the rest
+    origID = byteList[2]
+    msgID  = byteList[4] + 256*byteList[3]
+    srcID  = byteList[5]
+    hopCount = byteList[6]
+    pathFromDest = byteList[7:] #and the rest
     
     #And return
     return origID, msgID, srcID, hopCount, pathFromDest

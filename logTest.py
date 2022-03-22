@@ -24,4 +24,8 @@ c2 = makeMsgData(2,3,4,[5,6,8], logger)
 readMsgData(c2)
 readMsgData(c, logger)
 
+print(getMsgType(a))
+print(getMsgType(b))
+print(getMsgType(c))
+
 log.close()
