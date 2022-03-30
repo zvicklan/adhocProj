@@ -9,9 +9,9 @@ import logging
 from rpi_rf import RFDevice
 from msgFunctions import *
 from ioFunctions import *
-import GPIO
+import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 rxdevice = None
 txdevice = None
 
