@@ -65,7 +65,9 @@ while awaitingResponse:
                      ", protocol " + str(rxdevice.rx_proto) +
                      ", msgType " + str(msgType) + "]")
         if msgType == 1: #It's a real message!
-            awaitingResponse = False
+            (origID, msgID, srcID, destID) = readMsgRouteDisc(newMsg)
+            if origID != 1:
+                awaitingMsg = False
     time.sleep(0.01)
 
 #Clean up before exiting
