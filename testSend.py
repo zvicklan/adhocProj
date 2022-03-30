@@ -15,8 +15,8 @@ txdevice = None
 
 # pylint: disable=unused-argument
 def exithandler(signal, frame):
-    rxdevice.cleanup()
-    txdevice.cleanup()
+    #rxdevice.cleanup()
+    #txdevice.cleanup()
     sys.exit(0)
 
 # RX setup
