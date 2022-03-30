@@ -63,7 +63,7 @@ while awaitingMsg:
     time.sleep(0.01)
 
 #Send a Route Discovery msg (just as a test)
-msg = makeMsgRouteDisc(1,2,3,4)
+msg = makeMsgRouteDisc(4,3,2,1)
 sendMsg(txdevice, msg)
 logging.info(hex(msg) +
     " sent [msgType " + str(getMsgType(msg)) + "]")
