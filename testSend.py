@@ -59,8 +59,9 @@ awaitingResponse = True
 while awaitingResponse:
     if rxdevice.rx_code_timestamp != timestamp:
         timestamp = rxdevice.rx_code_timestamp
-        msgType = getMsgType(rxdevice.rx_code)
-        logging.info(hex(rxdevice.rx_code) +
+        newMsg = rxdevice.rx_code
+        msgType = getMsgType(newMsg)
+        logging.info(hex(newMsg) +
                      " [pulselength " + str(rxdevice.rx_pulselength) +
                      ", protocol " + str(rxdevice.rx_proto) +
                      ", msgType " + str(msgType) + "]")
