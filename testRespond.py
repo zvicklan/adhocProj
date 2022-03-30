@@ -53,10 +53,12 @@ awaitingMsg = True
 while awaitingMsg:
     if rxdevice.rx_code_timestamp != timestamp:
         timestamp = rxdevice.rx_code_timestamp
+        msgType = getMsgType(rxdevice.rx_code)
         logging.info(hex(rxdevice.rx_code) +
                      " [pulselength " + str(rxdevice.rx_pulselength) +
-                     ", protocol " + str(rxdevice.rx_proto) + "]")
-        if getMsgType(rxdevice.rx_code) == 1: #It's a real message!
+                     ", protocol " + str(rxdevice.rx_proto) +
+                     ", msgType " + str(msgType)"]")
+        if msgType == 1: #It's a real message!
             awaitingMsg = False
     time.sleep(0.01)
 
