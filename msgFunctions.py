@@ -60,9 +60,9 @@ def makeMsgRouteDisc(origID, msgID, srcID, destID, logger='None'):
     byteList[0] = 1
     byteList[1] = origID
     byteList[2] = 0 # overflow for msgID
-    byteList[4] = msgID #also counts as Byte 3
-    byteList[5] = srcID
-    byteList[6] = destID
+    byteList[3] = msgID
+    byteList[4] = srcID
+    byteList[5] = destID
 
     #And return the made msg
     return bytes2Msg(byteList, logger)
@@ -75,9 +75,9 @@ def readMsgRouteDisc(msg, logger='None'):
         
     # Build the message
     origID = byteList[1]
-    msgID  = byteList[4] + 16*byteList[3] + 16*16*byteList[2]
-    srcID  = byteList[5]
-    destID = byteList[6]
+    msgID  = byteList[3] + 16*byteList[2]
+    srcID  = byteList[4]
+    destID = byteList[5]
 
     #And return
     return origID, msgID, srcID, destID
@@ -85,16 +85,17 @@ def readMsgRouteDisc(msg, logger='None'):
 def makeMsgRouteReply(origID, msgID, srcID, pathFromDest, logger='None'):
     #Combines everything together into a message for sending
     
-    #Build the Bytes - Total message is 8Nibbles + length
-    byteList = [0] * 7
+    #Build the Bytes - Total message is 8 nibbles
+    byteList = [0] * 8
     byteList[0] = 2
     byteList[1] = origID
     byteList[2] = 0 # overflow for msgID
-    byteList[4] = msgID 
-    byteList[5] = srcID
-    byteList[6] = len(pathFromDest)
+    byteList[3] = msgID 
+    byteList[4] = srcID
+    ind = 5
     for node in pathFromDest:
-        byteList.append(node)
+        byteList[ind] = node
+        ind = ind + 1
         
     #And return the made msg
     return bytes2Msg(byteList, logger)
@@ -107,30 +108,28 @@ def readMsgRouteReply(msg, logger='None'):
         
     # Build the message
     origID = byteList[1]
-    msgID  = byteList[4] + 16*byteList[4] + 16*16*byteList[3]
-    srcID  = byteList[5]
-    hopCount = byteList[6]
-    pathFromDest = byteList[7:] #and the rest
-    
+    msgID  = byteList[3] + 16*byteList[2]
+    srcID  = byteList[4]
+    pathFromDest = byteList[5:] #and the rest
+    hopCount = len(pathFromDest)
     #And return
     return origID, msgID, srcID, hopCount, pathFromDest
 
 def makeMsgData(origID, msgID, srcID, pathFromOrig, logger='None'):
     #Combines everything together into a message for sending
     
-    msgLen = 8 + len(pathFromDest)
-    
-    #Build the Bytes - Total message is 9Nibbles + length
-    byteList = [0] * 7
+    #Build the Bytes - Total message is 8 nibbles
+    byteList = [0] * 8
     byteList[0] = 3
     byteList[1] = origID
     byteList[2] = 0 # overflow for msgID
-    byteList[4] = msgID #also counts as Byte 3
-    byteList[5] = srcID
-    byteList[6] = len(pathFromOrig)
+    byteList[3] = msgID 
+    byteList[4] = srcID
+    ind = 5
     for node in pathFromOrig:
-        byteList.append(node)
-        
+        byteList[ind] = node
+        ind = ind + 1
+
     #And return the made msg
     return bytes2Msg(byteList, logger)
     
@@ -142,10 +141,10 @@ def readMsgData(msg, logger='None'):
         
     # Build the message
     origID = byteList[1]
-    msgID  = byteList[4] + 16*byteList[3] + 16*16*byteList[2]
-    srcID  = byteList[5]
-    hopCount = byteList[6]
-    pathFromOrig = byteList[7:] #and the rest
+    msgID  = byteList[3] + 16*byteList[2]
+    srcID  = byteList[4]
+    pathFromOrig = byteList[5:] #and the rest
+    hopCount = len(pathFromOrig)
     
     #And return
     return origID, msgID, srcID, hopCount, pathFromOrig
