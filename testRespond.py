@@ -26,10 +26,10 @@ logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
 parser = argparse.ArgumentParser(description='Receives a decimal code via a 433/315MHz GPIO device')
 parser.add_argument('-g', dest='gpio', type=int, default=27,
                     help="GPIO pin (Default: 27)")
-args = parser.parse_args()
+argsRx = parser.parse_args()
 
 signal.signal(signal.SIGINT, exithandler)
-rxdevice = RFDevice(args.gpio)
+rxdevice = RFDevice(argsRx.gpio)
 rxdevice.enable_rx()
 
 # TX setup
@@ -40,14 +40,14 @@ parser.add_argument('-p', dest='pulselength', type=int, default=None,
                     help="Pulselength (Default: 350)")
 parser.add_argument('-t', dest='protocol', type=int, default=None,
                     help="Protocol (Default: 1)")
-args = parser.parse_args()
+argsTx = parser.parse_args()
 
-txdevice = RFDevice(args.gpio)
+txdevice = RFDevice(argsTx.gpio)
 txdevice.enable_tx()
 
 
 timestamp = None
-logging.info("Listening for codes on GPIO " + str(args.gpio))
+logging.info("Listening for codes on GPIO " + str(argsRx.gpio))
 #Listening loop
 awaitingMsg = True
 while awaitingMsg:
