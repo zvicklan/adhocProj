@@ -76,5 +76,3 @@ logging.info(hex(msg) +
 rxdevice.cleanup()
 txdevice.cleanup()
 
-#And quit
-exit()

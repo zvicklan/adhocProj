@@ -76,5 +76,3 @@ while awaitingResponse:
 rxdevice.cleanup()
 txdevice.cleanup()
 
-#And 
-exit()
