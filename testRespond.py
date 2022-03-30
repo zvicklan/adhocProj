@@ -63,7 +63,7 @@ while awaitingMsg:
             (origID, msgID, srcID, destID) = readMsgRouteDisc(newMsg)
             if origID == 1:
                 awaitingMsg = False
-    time.sleep(0.01)
+    time.sleep(0.001)
 
 #Send a Route Discovery msg (just as a test)
 msg = makeMsgRouteDisc(4,3,2,1)

@@ -69,7 +69,7 @@ while awaitingResponse:
             (origID, msgID, srcID, destID) = readMsgRouteDisc(newMsg)
             if origID != 1:
                 awaitingMsg = False
-    time.sleep(0.01)
+    time.sleep(0.001)
 
 #Clean up before exiting
 rxdevice.cleanup()
