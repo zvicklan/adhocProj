@@ -55,7 +55,7 @@ logging.info("Listening for codes on GPIO " + str(argsRx.gpio))
 #Listening loop
 receivedMsg = True
 rxdevice.enable_rx()
-while !receivedMsg:
+while not(receivedMsg):
     if rxdevice.rx_code_timestamp != timestamp:
         timestamp = rxdevice.rx_code_timestamp
         newMsg = rxdevice.rx_code
