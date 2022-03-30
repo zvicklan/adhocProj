@@ -51,6 +51,7 @@ sendMsg(txdevice, msg)
 
 logging.info(hex(msg) +
     " sent [msgType " + str(getMsgType(msg)) + "]")
+
 timestamp = None
 logging.info("Listening for codes on GPIO " + str(args.gpio))
 #Listening loop
@@ -70,3 +71,6 @@ while awaitingResponse:
 #Clean up before exiting
 rxdevice.cleanup()
 txdevice.cleanup()
+
+#And 
+exit()
