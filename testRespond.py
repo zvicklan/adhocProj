@@ -30,7 +30,6 @@ argsRx = parser.parse_args()
 
 signal.signal(signal.SIGINT, exithandler)
 rxdevice = RFDevice(argsRx.gpio)
-rxdevice.enable_rx()
 
 # TX setup
 parser = argparse.ArgumentParser(description='Sends a decimal code via a 433/315MHz GPIO device')
@@ -43,13 +42,13 @@ parser.add_argument('-t', dest='protocol', type=int, default=None,
 argsTx = parser.parse_args()
 
 txdevice = RFDevice(argsTx.gpio)
-txdevice.enable_tx()
 
 
 timestamp = None
 logging.info("Listening for codes on GPIO " + str(argsRx.gpio))
 #Listening loop
 awaitingMsg = True
+rxdevice.enable_rx()
 while awaitingMsg:
     if rxdevice.rx_code_timestamp != timestamp:
         timestamp = rxdevice.rx_code_timestamp
@@ -63,11 +62,13 @@ while awaitingMsg:
             (origID, msgID, srcID, destID) = readMsgRouteDisc(newMsg)
             if origID == 1:
                 awaitingMsg = False
-    time.sleep(0.001)
+    time.sleep(0.01)
 
+rxdevice.disable_rx()
 #Send a Route Discovery msg (just as a test)
 msg = makeMsgRouteDisc(4,3,2,1)
 sendMsg(txdevice, msg)
+
 logging.info(hex(msg) +
     " sent [msgType " + str(getMsgType(msg)) + "]")
 
