@@ -53,9 +53,9 @@ logging.info(hex(msg) +
 timestamp = None
 logging.info("Listening for codes on GPIO " + str(argsRx.gpio))
 #Listening loop
-awaitingResponse = True
+receivedMsg = True
 rxdevice.enable_rx()
-while awaitingResponse:
+while !receivedMsg:
     if rxdevice.rx_code_timestamp != timestamp:
         timestamp = rxdevice.rx_code_timestamp
         newMsg = rxdevice.rx_code
@@ -66,9 +66,8 @@ while awaitingResponse:
                      ", msgType " + str(msgType) + "]")
         if msgType == 1: #It's a real message!
             (origID, msgID, srcID, destID) = readMsgRouteDisc(newMsg)
-            logging.info("[originator " + str(origID) + "]")
             if origID != 1:
-                awaitingMsg = False
+                receivedMsg = True
     time.sleep(0.01)
 #Stop receive
 rxdevice.enable_rx()
