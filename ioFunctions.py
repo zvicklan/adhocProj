@@ -3,6 +3,6 @@
 def sendMsg(rfdevice, msg):
 #Takes in the rfdevice and msg (as an int) and sends it out
 
-    protocol = "default"
-    pulselength = "default"
+    protocol = None #Default 1
+    pulselength = None #Default 350
     rfdevice.tx_code(msg, protocol, pulselength)
