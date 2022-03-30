@@ -65,7 +65,12 @@ while awaitingMsg:
 #Send a Route Discovery msg (just as a test)
 msg = makeMsgRouteDisc(1,2,3,4)
 sendMsg(txdevice, msg)
+logging.info(hex(msg) +
+    " sent [msgType " + str(getMsgType(msg)) + "]")
 
 #Clean up before exiting
 rxdevice.cleanup()
 txdevice.cleanup()
+
+#And quit
+exit()

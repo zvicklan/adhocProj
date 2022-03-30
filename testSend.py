@@ -49,6 +49,8 @@ txdevice.enable_tx()
 msg = makeMsgRouteDisc(1,2,3,4)
 sendMsg(txdevice, msg)
 
+logging.info(hex(msg) +
+    " sent [msgType " + str(getMsgType(msg)) + "]")
 timestamp = None
 logging.info("Listening for codes on GPIO " + str(args.gpio))
 #Listening loop
