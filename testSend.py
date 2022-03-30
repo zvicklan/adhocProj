@@ -69,6 +69,6 @@ while awaitingResponse:
     time.sleep(0.01)
 
 #Clean up before exiting
-#rxdevice.cleanup()
-#txdevice.cleanup()
+rxdevice.cleanup()
+txdevice.cleanup()
 

@@ -69,5 +69,5 @@ logging.info(hex(msg) +
     " sent [msgType " + str(getMsgType(msg)) + "]")
 
 #Clean up before exiting
-#rxdevice.cleanup()
-#txdevice.cleanup()
+rxdevice.cleanup()
+txdevice.cleanup()
