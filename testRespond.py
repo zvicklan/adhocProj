@@ -60,6 +60,7 @@ while awaitingMsg:
                      ", msgType " + str(msgType) + "]")
         if msgType == 1: #It's a real message!
             (origID, msgID, srcID, destID) = readMsgRouteDisc(newMsg)
+            logging.info("[originator " + str(origID) + "]")
             if origID == 1:
                 awaitingMsg = False
     time.sleep(0.01)
