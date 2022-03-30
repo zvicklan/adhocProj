@@ -57,7 +57,7 @@ while awaitingMsg:
         logging.info(hex(rxdevice.rx_code) +
                      " [pulselength " + str(rxdevice.rx_pulselength) +
                      ", protocol " + str(rxdevice.rx_proto) +
-                     ", msgType " + str(msgType)"]")
+                     ", msgType " + str(msgType) + "]")
         if msgType == 1: #It's a real message!
             awaitingMsg = False
     time.sleep(0.01)
