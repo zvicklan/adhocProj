@@ -9,9 +9,9 @@ def bytes2Msg(byteList, logger='None'):
     #Loop through the bytes to make a msg
     for b in byteList:
         if msg == 0: #Create the msg
-            msg = b
+            msg = b + 8
         else: #Or tack onto the end (shifting up)
-            msg = msg * (2**8) + b
+            msg = msg * (2**4) + b
     #And output!
     return msg
 
@@ -20,8 +20,8 @@ def msg2Bytes(msg, logger='None'):
     #Start empty and recursively add
     byteList = []
     while msg > 0:
-        byteList.append(msg % 256) #capture the current
-        msg = msg // 256 #shift down a byte
+        byteList.append(msg % 16) #capture the current
+        msg = msg // 16 #shift down a byte
     #Reverse it
     byteList.reverse() #b/c want small byte last
     
@@ -35,36 +35,34 @@ def msg2Bytes(msg, logger='None'):
 #General helper function for getting the message type
 def getMsgType(msg):
     #Only want to capture the last byte (highest value)
+    # Not that we use the first bit now as a check
     #Also serves to check if messages are actually for us
-    minMsgLen = 7 #MAKE SURE TO UPDATE THIS: YOU'RE GONNA MESS THIS UP ZACH
     
     lenCount = 1
-    msgLen = 0
-    while msg > 255:
-        msgLen = msg % 256 #will end up being the 2nd byte
-        msg = msg // 256 #shift down a byte
+    msgLen = 8
+    while msg > 15:
+        msg = msg // 16 #shift down a byte
         lenCount = lenCount + 1
 
-    if lenCount != msgLen or msgLen < minMsgLen: #It doesn't add up!
+    if lenCount != 8 or (msg < 8): #s/b 8 nibbles and min val s/b 8
         msg = 0 #throw it out
+    else:
+        msg = msg - 8
         
     #And output. This is the last Byte (hence the msg Type)
     return msg
 
 def makeMsgRouteDisc(origID, msgID, srcID, destID, logger='None'):
     #Combines everything together into a message for sending
-
-    msgLen = 7
     
-    #Build the Bytes - Total message is 6B
-    byteList = [0] * 7
+    #Build the Bytes - Total message is 9 Nibbles
+    byteList = [0] * 8
     byteList[0] = 1
-    byteList[1] = msgLen
-    byteList[2] = origID
-    byteList[3] = 0 #Defined for consistency. Really just Byte4
-    byteList[4] = msgID #also counts as Byte 3
-    byteList[5] = srcID
-    byteList[6] = destID
+    byteList[1] = origID
+    byteList[2] = 0 # overflow for msgID
+    byteList[3] = msgID
+    byteList[4] = srcID
+    byteList[5] = destID
 
     #And return the made msg
     return bytes2Msg(byteList, logger)
@@ -76,30 +74,28 @@ def readMsgRouteDisc(msg, logger='None'):
     byteList = msg2Bytes(msg, logger)
         
     # Build the message
-    origID = byteList[2]
-    msgID  = byteList[4] + 256*byteList[3]
-    srcID  = byteList[5]
-    destID = byteList[6]
+    origID = byteList[1]
+    msgID  = byteList[3] + 16*byteList[2]
+    srcID  = byteList[4]
+    destID = byteList[5]
 
     #And return
     return origID, msgID, srcID, destID
 
 def makeMsgRouteReply(origID, msgID, srcID, pathFromDest, logger='None'):
     #Combines everything together into a message for sending
-
-    msgLen = 7 + len(pathFromDest)
     
-    #Build the Bytes - Total message is 6B
-    byteList = [0] * 7
+    #Build the Bytes - Total message is 8 nibbles
+    byteList = [0] * 8
     byteList[0] = 2
-    byteList[1] = msgLen
-    byteList[2] = origID
-    byteList[3] = 0 #Defined for consistency. Really just Byte4
-    byteList[4] = msgID #also counts as Byte 3
-    byteList[5] = srcID
-    byteList[6] = len(pathFromDest)
+    byteList[1] = origID
+    byteList[2] = 0 # overflow for msgID
+    byteList[3] = msgID 
+    byteList[4] = srcID
+    ind = 5
     for node in pathFromDest:
-        byteList.append(node)
+        byteList[ind] = node
+        ind = ind + 1
         
     #And return the made msg
     return bytes2Msg(byteList, logger)
@@ -111,48 +107,45 @@ def readMsgRouteReply(msg, logger='None'):
     byteList = msg2Bytes(msg, logger)
         
     # Build the message
-    origID = byteList[2]
-    msgID  = byteList[4] + 256*byteList[3]
-    srcID  = byteList[5]
-    hopCount = byteList[6]
-    pathFromDest = byteList[7:] #and the rest
-    
+    origID = byteList[1]
+    msgID  = byteList[3] + 16*byteList[2]
+    srcID  = byteList[4]
+    pathFromDest = byteList[5:] #and the rest
+    hopCount = len(pathFromDest)
     #And return
     return origID, msgID, srcID, hopCount, pathFromDest
 
-def makeMsgData(origID, msgID, srcID, pathFromDest, logger='None'):
+def makeMsgData(origID, msgID, srcID, pathFromOrig, logger='None'):
     #Combines everything together into a message for sending
     
-    msgLen = 7 + len(pathFromDest)
-    
-    #Build the Bytes - Total message is 6B
-    byteList = [0] * 7
+    #Build the Bytes - Total message is 8 nibbles
+    byteList = [0] * 8
     byteList[0] = 3
-    byteList[1] = msgLen
-    byteList[2] = origID
-    byteList[3] = 0 #Defined for consistency. Really just Byte4
-    byteList[4] = msgID #also counts as Byte 3
-    byteList[5] = srcID
-    byteList[6] = len(pathFromDest)
-    for node in pathFromDest:
-        byteList.append(node)
-        
+    byteList[1] = origID
+    byteList[2] = 0 # overflow for msgID
+    byteList[3] = msgID 
+    byteList[4] = srcID
+    ind = 5
+    for node in pathFromOrig:
+        byteList[ind] = node
+        ind = ind + 1
+
     #And return the made msg
     return bytes2Msg(byteList, logger)
     
 def readMsgData(msg, logger='None'):
-    #Outputs in order origID, msgID, srcID, hopCount, pathFromDest
+    #Outputs in order origID, msgID, srcID, hopCount, pathFromOrig
     
     #Get the bytes
     byteList = msg2Bytes(msg, logger)
         
     # Build the message
-    origID = byteList[2]
-    msgID  = byteList[4] + 256*byteList[3]
-    srcID  = byteList[5]
-    hopCount = byteList[6]
-    pathFromDest = byteList[7:] #and the rest
+    origID = byteList[1]
+    msgID  = byteList[3] + 16*byteList[2]
+    srcID  = byteList[4]
+    pathFromOrig = byteList[5:] #and the rest
+    hopCount = len(pathFromOrig)
     
     #And return
-    return origID, msgID, srcID, hopCount, pathFromDest
+    return origID, msgID, srcID, hopCount, pathFromOrig
 
