@@ -4,7 +4,8 @@ def bytes2Msg(byteList, logger='None'):
     #Log if desired
     if logger != 'None':
         logger.writerow(byteList)
-        
+    print('bytes2Msg')
+    print(byteList)    
     msg = 0
     #Loop through the bytes to make a msg
     for b in byteList:
@@ -12,6 +13,7 @@ def bytes2Msg(byteList, logger='None'):
             msg = b + 8
         else: #Or tack onto the end (shifting up)
             msg = msg * (2**4) + b
+            print(hex(msg))
     #And output!
     return msg
 
@@ -55,7 +57,7 @@ def getMsgType(msg):
 def makeMsgRouteDisc(origID, msgID, srcID, destID, logger='None'):
     #Combines everything together into a message for sending
     
-    #Build the Bytes - Total message is 9 Nibbles
+    #Build the Bytes - Total message is 8 Nibbles
     byteList = [0] * 8
     byteList[0] = 1
     byteList[1] = origID
