@@ -69,7 +69,8 @@ if myID == 1: #We'll have the first guy kick this off
     destNode = myID
     while destNode == myID: #b/c we want to send to someone else
         destNode = randint(1,maxID)
-    
+
+    destNode = 5 #for testing
     msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode)
     msgCounts[0] = msgCounts[0] + 1
     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
