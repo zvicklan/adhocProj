@@ -57,7 +57,7 @@ msgCounts = np.zeros((3,1))
 #Create a struct for tracking msgs we've seen (unique origID, msgType, msgID triplets)
 seenMsgs = np.zeros((maxID, numMsgTypes), dtype=object)
 for ii in np.ndindex(seenMsgs.shape):
-    msgs[ii] = []
+    seenMsgs[ii] = []
 
 
 # Start listening:
