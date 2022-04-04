@@ -72,8 +72,7 @@ if myID == 1: #We'll have the first guy kick this off
         destNode = randint(1,maxID)
         
     msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode)
-    logging.info(hex(msg) +
-        " sent [msgType " + str(getMsgType(msg)) + "]")
+    logging.info("Sent msg " + hex(msg))
     msgCounts[0] = msgCounts[0] + 1
     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
