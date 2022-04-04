@@ -102,16 +102,13 @@ while not(testDone):
                 continue
             #Check if we've seen it
             seenMsgIDs = seenMsgs[origID][0] #indexing msgType - 1
-            print(seenMsgIDs)
-            print(myID)
-            print(msgID)
             if msgID in seenMsgIDs:
                 continue
             else: #add it to the list and continue
                 seenMsgs[origID][0].append(msgID)
                 if destID == myID: #It's for me! Let's send a reply
                     #Reply to the message!)
-                    msg = makeMsgRouteReply(origID, msgID, myID, myID)
+                    msg = makeMsgRouteReply(origID, msgID, myID, [myID])
                     logging.info("Got Route Disc. Sending Reply msg " + hex(msg))
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
                 else: # We want to forward along the route disc
