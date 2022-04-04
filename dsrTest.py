@@ -101,14 +101,22 @@ while not(testDone):
                 continue
             #Check if we've seen it
             seenMsgIDs = seenMsgs[origID][0] #indexing msgType - 1
+            print(seenMsgIDs)
+            print(myID)
+            print(msgID)
             if msgID in seenMsgIDs:
                 continue
             else: #add it to the list and continue
                 seenMsgs[origID][0].append(msgID)
-                
-            # We want to send it again
-            msg = makeMsgRouteDisc(origID, msgID, myID, destID)
-            sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                if destID == myID: #It's for me! Let's send a reply
+                    #Reply to the message!
+                    logging.info("Got Route Disc. Sending Reply msg " + hex(msg))
+                    msg = makeMsgRouteReply(origID, msgID, myID, myID)
+                    sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                else: # We want to forward along the route disc
+                    logging.info("Got Route Disc. Sending Disc msg " + hex(msg))
+                    msg = makeMsgRouteDisc(origID, msgID, myID, destID)
+                    sendMsg(txdevice, msg, rxdevice) #auto RX blanking
             
         if msgType == 2: #Route Reply
             (origID, msgID, srcID, hopCount, pathFromDest) = readMsgRouteReply(newMsg)
