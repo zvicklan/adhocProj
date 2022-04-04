@@ -4,8 +4,7 @@ def bytes2Msg(byteList, logger='None'):
     #Log if desired
     if logger != 'None':
         logger.writerow(byteList)
-    print('bytes2Msg')
-    print(byteList)    
+        
     msg = 0
     #Loop through the bytes to make a msg
     for b in byteList:
@@ -13,7 +12,6 @@ def bytes2Msg(byteList, logger='None'):
             msg = b + 8
         else: #Or tack onto the end (shifting up)
             msg = msg * (2**4) + b
-            print(hex(msg))
     #And output!
     return msg
 
