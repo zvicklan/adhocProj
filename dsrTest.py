@@ -70,7 +70,10 @@ if myID == 1: #We'll have the first guy kick this off
     destNode = myID
     while destNode == myID: #b/c we want to send to someone else
         destNode = randint(1,maxID)
-        
+    
+    logging.info(myID)
+    logging.info(destNode)
+    
     msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode)
     logging.info(msg)
     logging.info(hex(msg))
