@@ -73,6 +73,7 @@ if myID == 1: #We'll have the first guy kick this off
     
     logging.info(myID)
     logging.info(destNode)
+    logging.info(msgCounts[0])
     
     msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode)
     logging.info(msg)
