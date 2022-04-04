@@ -86,7 +86,6 @@ logging.info("Listening for codes on GPIO " + str(argsRx.gpio))
 #Listening loop
 testDone = False
 while not(testDone):
-    print('0')
     if rxdevice.rx_code_timestamp != timestamp:
         timestamp = rxdevice.rx_code_timestamp
         newMsg = rxdevice.rx_code
@@ -116,10 +115,8 @@ while not(testDone):
                     msg = makeMsgRouteDisc(origID, msgID, myID, destID)
                     logging.info("Got Route Disc. Sending Disc msg " + hex(msg))
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
-                    print('B')
             
         if msgType == 2: #Route Reply
-            print('C')
             (origID, msgID, srcID, hopCount, pathFromDest) = readMsgRouteReply(newMsg)
             pathFromDest.insert(0, srcID) #Interface defined w/o src in list, so add it
             
@@ -135,9 +132,8 @@ while not(testDone):
                 #Resend with the updated path!
                 msg = makeMsgRouteReply(origID, msgID, myID, pathFromDest)
                 sendMsg(txdevice, msg, rxdevice) #auto RX blanking
-        print('D')
+
         if msgType == 3: #Data Message
-            print('E')
             (origID, msgID, srcID, hopCount, pathFromOrig) = readMsgData(newMsg)
             #Forward the message if your predecessor in the list sent
             pathFromOrig.insert(0, origID) # Now this is the whole path
@@ -154,9 +150,8 @@ while not(testDone):
                 #Then I send it along!
                 msg = newMsg #Just keep the message untouched
                 sendMsg(txdevice, msg, rxdevice) #auto RX blanking
-        print('F')
+                
     time.sleep(0.01)
-    print('G')
     
 #Stop receive
 rxdevice.disable_rx()
