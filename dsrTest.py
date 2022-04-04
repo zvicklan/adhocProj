@@ -49,6 +49,8 @@ txdevice = RFDevice(argsTx.gpio)
 file = open('idNum.txt', 'r')
 line = file.readlines()
 myID = int(line[0])
+logging.info("Received ID " + str(myID))
+
 maxID = 5 #b/c we know the # of nodes
 numMsgTypes = 3
 
@@ -70,6 +72,8 @@ if myID == 1: #We'll have the first guy kick this off
         destNode = randint(1,maxID)
         
     msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode)
+    logging.info(hex(msg) +
+        " sent [msgType " + str(getMsgType(msg)) + "]")
     msgCounts[0] = msgCounts[0] + 1
     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
