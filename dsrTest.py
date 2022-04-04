@@ -111,7 +111,7 @@ while not(testDone):
                 if destID == myID: #It's for me! Let's send a reply
                     #Reply to the message!)
                     msg = makeMsgRouteReply(origID, msgID, myID, myID)
-                    logging.info("Got Route Disc. Sending Reply msg " + hex(msg)
+                    logging.info("Got Route Disc. Sending Reply msg " + hex(msg))
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
                 else: # We want to forward along the route disc
                     msg = makeMsgRouteDisc(origID, msgID, myID, destID)
