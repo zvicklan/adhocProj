@@ -10,6 +10,7 @@ from rpi_rf import RFDevice
 from msgFunctions import *
 from ioFunctions import *
 from random import *
+import numpy as np
 
 rxdevice = None
 txdevice = None
