@@ -54,7 +54,7 @@ logging.info("Received ID " + str(myID))
 maxID = 5 #b/c we know the # of nodes
 numMsgTypes = 3
 
-msgCounts = np.zeros((3,))
+msgCounts = np.zeros((3,),dtype=int)
 
 #Create a struct for tracking msgs we've seen (unique origID, msgType, msgID triplets)
 seenMsgs = np.zeros((maxID, numMsgTypes), dtype=object)
