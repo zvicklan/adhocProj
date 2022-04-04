@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import time
 
 def sendMsg(txdevice, msg, rxdevice="None"):
 #Takes in the rfdevice and msg (as an int) and sends it out
