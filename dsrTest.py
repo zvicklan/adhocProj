@@ -74,7 +74,7 @@ if myID == 1: #We'll have the first guy kick this off
     logging.info(destNode)
     logging.info(msgCounts[0])
     
-    msg = makeMsgRouteDisc(myID,0,myID,3) #myID, msgCounts[0], myID, destNode)
+    msg = makeMsgRouteDisc(myID,0,myID,destNode) #myID, msgCounts[0], myID, destNode)
     logging.info(msg)
     logging.info(hex(msg))
     logging.info("Sent msg " + hex(msg))
