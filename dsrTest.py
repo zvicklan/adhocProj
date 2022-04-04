@@ -52,7 +52,7 @@ myID = int(line[0])
 maxID = 5 #b/c we know the # of nodes
 numMsgTypes = 3
 
-msgCounts = np.zeros(3,1)
+msgCounts = np.zeros((3,1))
 
 #Create a struct for tracking msgs we've seen (unique origID, msgType, msgID triplets)
 seenMsgs = np.zeros((maxID, numMsgTypes), dtype=object)
