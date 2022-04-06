@@ -15,6 +15,55 @@ def bytes2Msg(byteList, logger='None'):
     #And output!
     return msg
 
+def isAckMsg(msg):
+#Checks for ACK by checking one bit
+    bitNum = 28
+    bitPow = bitNum - 1
+
+    isACK = 0
+    #First, we want to check it isn't already an ACK
+    shifted = msg // (2**bitPow)
+    if shifted % 2 == 1:
+        #Then we're an ACK
+        isACK = 1
+        
+    return isACK
+
+def createAckMsg(msg):
+#Creates an ACK msg by setting one bit
+    bitNum = 28
+    bitPow = bitNum - 1
+
+    #First, we want to check it isn't already an ACK
+    if not isAckMsg(msg):
+        #Then we're good to go
+        msgNew = msg + 2**bitPow
+
+        #If something isn't working, error
+        if not isAckMsg(msgNew):
+            raise Exception("ACK Creation is not working properly: " +
+                            hex(msg) + " led to " + hex(msgNew))        
+    else:
+        msgNew = msg
+        
+    #And return the result
+    return msgNew
+
+def deAckMsg(msg):
+#Removes the ACK from a msg
+    bitNum = 28
+    bitPow = bitNum - 1
+
+    #First, we want to check it is already an ACK
+    if isAckMsg(msg):
+        #Then we're good to go
+        msgNew = msg - 2**bitPow      
+    else: #Wasn't an ACK anyway
+        msgNew = msg
+        
+    #And return the result
+    return msgNew
+
 #General helper function for going Msg to Byte String
 def msg2Bytes(msg, logger='None'):
     #Start empty and recursively add
@@ -45,12 +94,12 @@ def getMsgType(msg):
         lenCount = lenCount + 1
 
     if lenCount != 8 or (msg < 8): #s/b 8 nibbles and min val s/b 8
-        msg = 0 #throw it out
+        msgType = 0 #throw it out
     else:
-        msg = msg - 8
+        msgType = msg - 8
         
     #And output. This is the last Byte (hence the msg Type)
-    return msg
+    return msgType
 
 def makeMsgRouteDisc(origID, msgID, srcID, destID, logger='None'):
     #Combines everything together into a message for sending
