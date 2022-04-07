@@ -111,7 +111,8 @@ def makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger='None'):
     byteList[2] = msgID
     byteList[3] = srcID
     byteList[4] = destID
-    
+
+    ind = 5
     for node in pathFromOrig:
         byteList[ind] = node
         ind = ind + 1
@@ -180,7 +181,7 @@ def readMsgRouteReply(msg, logger='None'):
 def makeMsgData(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
     #Combines everything together into a message for sending
 
-    msgType = 2
+    msgType = 3
     
     #Use the helper function
     msg = makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger)

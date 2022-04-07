@@ -54,24 +54,25 @@ logging.info("Received ID " + str(myID))
 maxID = 5 #b/c we know the # of nodes
 numMsgTypes = 3
 
-msgCounts = [0] * numMsgTypes
+numDests = 10
 
-#Create a struct for tracking msgs we've seen (unique origID, msgType, msgID triplets)
-seenMsgs = np.zeros((maxID, numMsgTypes), dtype=object)
-for ii in np.ndindex(seenMsgs.shape):
-    seenMsgs[ii] = []
+msgCounts = [1] * numMsgTypes
+hops2Node = [0] * maxID # Will store the num hops
+path2Node = [0] * maxID # Will store the node
+
+#Create a struct for tracking the last msg we've seen from each node
+lastMsg = [[0 for i in range(3)] for j in range(5)]
 
 # Start listening:
 rxdevice.enable_rx()
 
 if myID == 1: #We'll have the first guy kick this off
+    msgDests = genDests(numDests, myID)
     #Send a Route Discovery msg (just as a test)
-    destNode = myID
-    while destNode == myID: #b/c we want to send to someone else
-        destNode = randint(1,maxID)
+    destNode = msgDests[0]
 
     destNode = 5 #for testing
-    msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode)
+    msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode, [])
     msgCounts[0] = msgCounts[0] + 1
     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
@@ -82,6 +83,8 @@ timestamp = None
 logging.info("Listening for codes on GPIO " + str(argsRx.gpio))
 
 #TODO: Need to figure out a plan for logic to create messages
+#  Might just be spamming msgs 1->5
+msgBuffer = genDests(numDests, myID)
 
 #Listening loop
 testDone = False
@@ -97,44 +100,62 @@ while not(testDone):
 
         #We will do processing if this is a real message
         if msgType == 1: #Route Discovery
-            (origID, msgID, srcID, destID) = readMsgRouteDisc(newMsg)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(newMsg)
             if origID == myID: #Ignore our own msgs (or replies to them)
                 continue
-            #Check if we've seen it
-            seenMsgIDs = seenMsgs[origID][0] #indexing msgType - 1
-            if msgID in seenMsgIDs:
+            #Check if we've seen it - Need to allow for multiple paths coming in
+            lastMsgID = lastMsg[origID-1][0]
+            if msgID == lastMsgID and destID != myID:
                 continue
-            else: #add it to the list and continue
-                seenMsgs[origID][0].append(msgID)
+            else: #add it to the list
+                lastMsg[origID-1][0] = msgID
                 if destID == myID: #It's for me! Let's send a reply
-                    #Reply to the message!)
-                    msg = makeMsgRouteReply(origID, msgID, myID, [myID])
-                    logging.info("Got Route Disc. Sending Reply msg " + hex(msg))
-                    sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                    #If this is a shorter path than I previously had, or it's a new msg
+                    if hops2Node[srcID-1] > hopCount or msgID != lastMsgID:
+                        path2Node = updateCache(path2Node, myID, origID, destID, pathFromOrig)
+                        logging.info("Got Route Disc. Updated routing cache to " + print(path2Node))
+                        
+                        msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
+                        logging.info("Got Route Disc. Sending Reply msg " + hex(msg))
+                        sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                        
                 else: # We want to forward along the route disc
-                    msg = makeMsgRouteDisc(origID, msgID, myID, destID)
+                    # Check that we aren't on the path already, then send it!
+                    if myID in pathFromOrig:
+                        continue #We don't want to create endless loops
+                    pathFromOrig[pathFromOrig.index(0)] = myID #add myself in the first available 0 spot
+                    msg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig)
                     logging.info("Got Route Disc. Sending Disc msg " + hex(msg))
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
             
         if msgType == 2: #Route Reply
-            (origID, msgID, srcID, hopCount, pathFromDest) = readMsgRouteReply(newMsg)
-            pathFromDest.insert(0, srcID) #Interface defined w/o src in list, so add it
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(newMsg)
+            
+            #Capture the info as long as we're involved
+            if myID not in pathFromOrig:
+                continue #Skip if it's not something involving us
+            
+            path2Node = updateCache(path2Node, myID, origID, destID, pathFromOrig)
+            logging.info("Got Route Reply. Updated routing cache to " + print(path2Node))
             
             if origID == myID: # We got a response!
                 #Print the message!
                 logging.info("Received Route Reply from node " + str(srcID) +
-                             " with path " + str(pathFromDest))
+                             " with path " + str(pathFromOrig))
                 testDone = True #TODO Temporary logic for test - next send a data message
                 
-            else: # Check that we aren't on the path already, then send it!
-                if myID in pathFromDest:
-                    continue #We don't want to create endless loops
-                #Resend with the updated path!
-                msg = makeMsgRouteReply(origID, msgID, myID, pathFromDest)
-                sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+            else: # Check if it's our turn to send this msg (comes from the previous person)
+                # We should be right before the sender
+                srcInd = pathFromOrig.index(srcID)
+                myInd  = pathFromOrig.index(myID)
+
+                if srcInd == myInd + 1:
+                    #Forward it along!
+                    msg = makeMsgRouteReply(origID, msgID, myID, pathFromOrig)
+                    sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
         if msgType == 3: #Data Message
-            (origID, msgID, srcID, hopCount, pathFromOrig) = readMsgData(newMsg)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(newMsg)
             #Forward the message if your predecessor in the list sent
             pathFromOrig.insert(0, origID) # Now this is the whole path
 
@@ -148,6 +169,9 @@ while not(testDone):
             #Only send if I'm the next stop in the route
             if pathFromOrig[senderInd + 1] == myID:
                 #Then I send it along!
+                newMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig)
+                logging.info("Received msg from node " + str(srcID) +
+                             "Sending along " + str(newMsg))
                 msg = newMsg #Just keep the message untouched
                 sendMsg(txdevice, msg, rxdevice) #auto RX blanking
                 

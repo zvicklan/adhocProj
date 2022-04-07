@@ -28,4 +28,19 @@ print(getMsgType(a))
 print(getMsgType(b))
 print(getMsgType(c))
 
+print(getMsgType(1234))
+
+#ACK tests
+print(hex(a))
+print(isAckMsg(a))
+b = createAckMsg(a)
+print(hex(b))
+print(isAckMsg(b))
+c = createAckMsg(b)
+print(hex(c))
+print(isAckMsg(c))
+d = deAckMsg(c)
+print(hex(d))
+print(isAckMsg(d))
+
 log.close()
