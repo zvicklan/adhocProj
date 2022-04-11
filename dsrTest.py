@@ -145,7 +145,7 @@ while not(testDone):
                              " with path " + str(pathFromOrig))
                 #Send a data msg!
                 newMsg = makeMsgData(origID, msgID, myID, destID, path2Node[destID-1])
-                sendMsg(txdevice, newMsg, rxDevice) #auto Rx blanking
+                sendMsg(txdevice, newMsg, rxdevice) #auto Rx blanking
                 
             else: # Check if it's our turn to send this msg (comes from the previous person)
                 # We should be right before the sender
