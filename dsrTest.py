@@ -161,7 +161,7 @@ while not(testDone):
 
                 if srcInd == myInd + 1:
                     #Forward it along!
-                    msg = makeMsgRouteReply(origID, msgIDs[1], myID, pathFromOrig)
+                    msg = makeMsgRouteReply(origID, msgIDs[1], myID, destID, pathFromOrig)
                     msgIDs[1] = (msgIDs[1] + 1) % 16
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
