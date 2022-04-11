@@ -57,7 +57,7 @@ numMsgTypes = 3
 
 numDests = 10
 
-msgCounts = [1] * numMsgTypes
+msgIDs = [1] * numMsgTypes
 hops2Node = [0] * maxID # Will store the num hops
 path2Node = [0] * maxID # Will store the node
 
@@ -73,8 +73,8 @@ if myID == 1: #We'll have the first guy kick this off
     destNode = msgDests[0]
 
     destNode = 5 #for testing
-    msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode, [])
-    msgCounts[0] = msgCounts[0] + 1
+    msg = makeMsgRouteDisc(myID, msgIDs[0], myID, destNode, [])
+    msgIDs[0] = (msgIDs[0] + 1) % 16
     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
     logging.info(hex(msg) +
@@ -110,7 +110,7 @@ while not(testDone):
                 continue
             #Check if we've seen it - Need to allow for multiple paths coming in
             lastMsgID = lastMsg[origID-1][0]
-            if msgID == lastMsgID and destID != myID:
+            if msgID == lastMsgID and destID != myID: #duplicate, not for me
                 continue
             else: #add it to the list
                 lastMsg[origID-1][0] = msgID
@@ -126,7 +126,7 @@ while not(testDone):
                         
                 else: # We want to forward along the route disc
                     # Check that we aren't on the path already, then send it!
-                    if myID in pathFromOrig:
+                    if myID in wholePath:
                         continue #We don't want to create endless loops
                     pathFromOrig.append(myID) #add myself in the first available 0 spot
                     msg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig)
@@ -161,7 +161,8 @@ while not(testDone):
 
                 if srcInd == myInd + 1:
                     #Forward it along!
-                    msg = makeMsgRouteReply(origID, msgID, myID, pathFromOrig)
+                    msg = makeMsgRouteReply(origID, msgIDs[1], myID, pathFromOrig)
+                    msgIDs[1] = (msgIDs[1] + 1) % 16
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
         if msgType == 3: #Data Message
