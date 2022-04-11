@@ -153,7 +153,8 @@ while not(testDone):
                 logging.info("Received Route Reply from node " + str(srcID) +
                              " with path " + str(wholePath))
                 #Send a data msg!
-                newMsg = makeMsgData(origID, msgID, myID, destID, path2Node[destID-1])
+                path = path2Node[destID-1]
+                newMsg = makeMsgData(origID, msgID, myID, destID, path[:-1])
                 sendMsg(txdevice, newMsg, rxdevice) #auto Rx blanking
                 logging.info("Sending " + hex(newMsg))
                 
