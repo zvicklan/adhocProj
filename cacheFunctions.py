@@ -32,7 +32,7 @@ def updateCache(cache, hops2Node, myNode, orig, dest, path):
         cache[node-1] = subPath
         hops2Node[node-1] = len(subPath)
     
-    return cache
+    return cache, hops2Node
             
 def genDests(numDests, myID):
     #Create a numDests vector of destinations, excluding myID

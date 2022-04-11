@@ -113,7 +113,7 @@ while not(testDone):
                 if destID == myID: #It's for me! Let's send a reply
                     #If this is a shorter path than I previously had, or it's a new msg
                     if hops2Node[srcID-1] > hopCount or msgID != lastMsgID:
-                        path2Node = updateCache(path2Node, myID, origID, destID, pathFromOrig)
+                        path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, origID, destID, pathFromOrig)
                         logging.info("Got Route Disc. Updated routing cache to " + print(path2Node))
                         
                         msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
@@ -136,7 +136,7 @@ while not(testDone):
             if myID not in pathFromOrig:
                 continue #Skip if it's not something involving us
             
-            path2Node = updateCache(path2Node, myID, origID, destID, pathFromOrig)
+            path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, origID, destID, pathFromOrig)
             logging.info("Got Route Reply. Updated routing cache to " + print(path2Node))
             
             if origID == myID: # We got a response!
