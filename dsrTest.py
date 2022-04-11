@@ -155,7 +155,7 @@ while not(testDone):
                 #Send a data msg!
                 newMsg = makeMsgData(origID, msgID, myID, destID, path2Node[destID-1])
                 sendMsg(txdevice, newMsg, rxdevice) #auto Rx blanking
-                logging.info("Sending " + hex(msg))
+                logging.info("Sending " + hex(newMsg))
                 
             else: # Check if it's our turn to send this msg (comes from the previous person)
                 # We should be right before the sender
