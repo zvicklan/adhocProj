@@ -10,6 +10,12 @@ def remove0s(path):
 
 def updateCache(cache, hops2Node, myNode, orig, dest, path):
     #Updates the cache using the info from the path
+    print(cache)
+    print(hops2Node)
+    print(myNode)
+    print(orig)
+    print(dest)
+    print(path)
     wholePath = path.copy()
     wholePath.insert(0, orig)
     wholePath.append(dest)
@@ -31,7 +37,9 @@ def updateCache(cache, hops2Node, myNode, orig, dest, path):
                 subPath = wholePath[myInd + 1 : ii + 1]
         cache[node-1] = subPath
         hops2Node[node-1] = len(subPath)
-    
+    print(cache)
+    print(hops2Node)
+    print(wholePath)
     return cache, hops2Node
             
 def genDests(numDests, myID):
