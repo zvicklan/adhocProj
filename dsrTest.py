@@ -133,7 +133,7 @@ while not(testDone):
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(newMsg)
             
             #Capture the info as long as we're involved
-            if myID not in pathFromOrig:
+            if myID not in pathFromOrig and myID != origID:
                 continue #Skip if it's not something involving us
             
             path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, origID, destID, pathFromOrig)
