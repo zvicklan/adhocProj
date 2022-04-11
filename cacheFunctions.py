@@ -8,11 +8,7 @@ def remove0s(path):
 
     return newPath
 
-def updateCache(cache, hops2Node, myNode, orig, dest, path):
-    #Updates the cache using the info from the path
-    wholePath = path.copy()
-    wholePath.insert(0, orig)
-    wholePath.append(dest)
+def updateCache(cache, hops2Node, myNode, path):
 
     myInd = wholePath.index(myNode)
 

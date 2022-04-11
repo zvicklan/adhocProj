@@ -102,6 +102,10 @@ while not(testDone):
         #We will do processing if this is a real message
         if msgType == 1: #Route Discovery
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(newMsg)
+            wholePath = pathFromOrig.copy()
+            wholePath.insert(0, origID)
+            wholePath.append(destID) # Now this is the whole path
+            
             if origID == myID: #Ignore our own msgs (or replies to them)
                 continue
             #Check if we've seen it - Need to allow for multiple paths coming in
@@ -113,7 +117,7 @@ while not(testDone):
                 if destID == myID: #It's for me! Let's send a reply
                     #If this is a shorter path than I previously had, or it's a new msg
                     if hops2Node[srcID-1] > hopCount or msgID != lastMsgID:
-                        path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, origID, destID, pathFromOrig)
+                        path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
                         logging.info("Got Route Disc. Updated routing cache to " + str(path2Node[origID-1]))
                         
                         msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
@@ -131,26 +135,29 @@ while not(testDone):
             
         if msgType == 2: #Route Reply
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(newMsg)
+            wholePath = pathFromOrig.copy()
+            wholePath.insert(0, origID)
+            wholePath.append(destID) # Now this is the whole path
             
             #Capture the info as long as we're involved
-            if myID not in pathFromOrig and myID != origID:
+            if myID not in wholePath:
                 continue #Skip if it's not something involving us
             
-            path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, origID, destID, pathFromOrig)
+            path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
             logging.info("Got Route Reply. Updated routing cache to " + str(path2Node[destID-1]))
             
             if origID == myID: # We got a response!
                 #Print the message!
                 logging.info("Received Route Reply from node " + str(srcID) +
-                             " with path " + str(pathFromOrig))
+                             " with path " + str(wholePath))
                 #Send a data msg!
                 newMsg = makeMsgData(origID, msgID, myID, destID, path2Node[destID-1])
                 sendMsg(txdevice, newMsg, rxdevice) #auto Rx blanking
                 
             else: # Check if it's our turn to send this msg (comes from the previous person)
                 # We should be right before the sender
-                srcInd = pathFromOrig.index(srcID)
-                myInd  = pathFromOrig.index(myID)
+                srcInd = wholePath.index(srcID)
+                myInd  = wholePath.index(myID)
 
                 if srcInd == myInd + 1:
                     #Forward it along!
@@ -160,21 +167,26 @@ while not(testDone):
         if msgType == 3: #Data Message
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(newMsg)
             #Forward the message if your predecessor in the list sent
-            pathFromOrig.insert(0, origID) # Now this is the whole path
+            wholePath = pathFromOrig.copy()
+            wholePath.insert(0, origID)
+            wholePath.append(destID) # Now this is the whole path
 
             #Error checking that we should be getting this message
-            if srcID not in pathFromOrig:
+            if srcID not in wholePath:
                 logging.info("Received msg from node " + str(srcID) +
-                             "not in route " + str(pathFromOrig))
+                             "not in route " + str(wholePath))
                 continue
             
-            senderInd = pathFromOrig.index(srcID) #Who this came from
+            senderInd = wholePath.index(srcID) #Who this came from
             #Only send if I'm the next stop in the route
-            if pathFromOrig[senderInd + 1] == myID:
+            if destID == myID: #It's for me!
+                logging.info("Received msg from node " + str(srcID) +
+                             ". Msg was " + hex(newMsg))
+            elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
                 #Then I send it along!
                 newMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig)
                 logging.info("Received msg from node " + str(srcID) +
-                             "Sending along " + str(newMsg))
+                             " Sending along " + hex(newMsg))
                 msg = newMsg #Just keep the message untouched
                 sendMsg(txdevice, msg, rxdevice) #auto RX blanking
                 
