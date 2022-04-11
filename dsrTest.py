@@ -114,6 +114,9 @@ while not(testDone):
                     #If this is a shorter path than I previously had, or it's a new msg
                     if hops2Node[srcID-1] > hopCount or msgID != lastMsgID:
                         path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, origID, destID, pathFromOrig)
+                        print(destID)
+                        print(pathFromOrig)
+                        print(path2Node)
                         logging.info("Got Route Disc. Updated routing cache to " + print(path2Node[destID-1]))
                         
                         msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
