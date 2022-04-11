@@ -73,7 +73,7 @@ if myID == 1: #We'll have the first guy kick this off
     destNode = msgDests[0]
 
     destNode = 5 #for testing
-    msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode, [])
+    msg = makeMsgRouteDisc(myID, msgCounts[0], myID, destNode, [myID])
     msgCounts[0] = msgCounts[0] + 1
     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
 
@@ -124,7 +124,7 @@ while not(testDone):
                     # Check that we aren't on the path already, then send it!
                     if myID in pathFromOrig:
                         continue #We don't want to create endless loops
-                    pathFromOrig[pathFromOrig.index(0)] = myID #add myself in the first available 0 spot
+                    pathFromOrig.append(myID) #add myself in the first available 0 spot
                     msg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig)
                     logging.info("Got Route Disc. Sending Disc msg " + hex(msg))
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
