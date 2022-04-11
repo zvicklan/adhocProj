@@ -1,9 +1,11 @@
+from ioFunctions import *
+
 #General helper function for going Byte String to Msg
 def bytes2Msg(byteList, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow(byteList)
+        logger.writerow([getMsgTimeStamp()] + byteList)
         
     msg = 0
     #Loop through the bytes to make a msg
@@ -76,7 +78,7 @@ def msg2Bytes(msg, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow(byteList)
+        logger.writerow([getMsgTimeStamp()] + byteList)
         
     #And output!
     return byteList 

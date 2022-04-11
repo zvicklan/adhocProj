@@ -5,8 +5,11 @@ sys.path.append("D:/Documents/2021/CMU/04sprin/Networks/Projects/Proj2/Pi")
 import msgFunctions
 reload(msgFunctions)
 from msgFunctions import *
+from ioFunctions import *
 
-log = open('D:/Documents/2021/CMU/04sprin/Networks/Projects/Proj2/Pi/logs/test3.csv', 'w', newline='')
+logDir = 'D:/Documents/2021/CMU/04sprin/Networks/Projects/Proj2/Pi/logs/'
+timeStamp = getFileTimeStamp()
+log = open(logDir + 'log_'+ timeStamp +'.csv', 'w', newline='')
 
 logger = csv.writer(log)
 a = makeMsgRouteDisc(1,2,3,1, [5, 6, 1])
@@ -43,4 +46,7 @@ d = deAckMsg(c)
 print(hex(d))
 print(isAckMsg(d))
 
+#ioFunctions test
+print(getFileTimeStamp())
+print(getMsgTimeStamp())
 log.close()

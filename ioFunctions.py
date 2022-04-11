@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import time
+from datetime import datetime
 
 def sendMsg(txdevice, msg, rxdevice="None"):
 #Takes in the rfdevice and msg (as an int) and sends it out
@@ -20,3 +21,15 @@ def sendMsg(txdevice, msg, rxdevice="None"):
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
+
+def getFileTimeStamp():
+    #Returns a string in format 'mmdd_hhmm'
+    now = datetime.now()
+    timeStamp = now.strftime('%m%d_%H%M%S')
+    return timeStamp
+
+def getMsgTimeStamp():
+    #Returns a string in format 'mmdd_hhmm'
+    now = datetime.now()
+    timeStamp = 3600*now.hour + 60*now.minute + now.second + now.microsecond*1e-6
+    return timeStamp
