@@ -18,32 +18,32 @@ print(a)
 cache = [8]*5
 hops2Node = [0] * 5
 node = 1
-path=[2,3,4]
-updateCache(cache, hops2Node, node, 1, 5, path)
+path=[1, 2,3,4, 5]
+updateCache(cache, hops2Node, node, path)
 print(cache)
 print(hops2Node)
 
 cache = [8]*5
 hops2Node = [0] * 5
-updateCache(cache, hops2Node, 2, 1, 5, path)
+updateCache(cache, hops2Node, 2, path)
 print(cache)
 print(hops2Node)
 
 cache = [8]*5
 hops2Node = [0] * 5
-updateCache(cache, hops2Node, 3, 1, 5, path)
+updateCache(cache, hops2Node, 3, path)
 print(cache)
 print(hops2Node)
 
 cache = [8]*5
 hops2Node = [0] * 5
-updateCache(cache, hops2Node, 4, 1, 5, path)
+updateCache(cache, hops2Node, 4, path)
 print(cache)
 print(hops2Node)
 
 cache = [8]*5
 hops2Node = [0] * 5
-updateCache(cache, hops2Node, 5, 1, 5, path)
+updateCache(cache, hops2Node, 5, path)
 print(cache)
 print(hops2Node)
 
