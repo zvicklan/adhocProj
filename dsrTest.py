@@ -9,6 +9,7 @@ import logging
 from rpi_rf import RFDevice
 from msgFunctions import *
 from ioFunctions import *
+from cacheFunctions import *
 from random import *
 import numpy as np
 
