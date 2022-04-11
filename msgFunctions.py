@@ -1,4 +1,5 @@
 from ioFunctions import *
+from cacheFunctions import *
 
 #General helper function for going Byte String to Msg
 def bytes2Msg(byteList, logger='None'):
