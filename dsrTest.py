@@ -121,8 +121,9 @@ while not(testDone):
                         logging.info("Got Route Disc. Updated routing cache to " + str(path2Node[origID-1]))
                         
                         msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
-                        logging.info("Got Route Disc. Sending Reply msg " + hex(msg))
+                        logging.info("For me! Sending Reply msg " + hex(msg))
                         sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                        logging.info("Sending " + hex(msg))
                         
                 else: # We want to forward along the route disc
                     # Check that we aren't on the path already, then send it!
@@ -130,8 +131,9 @@ while not(testDone):
                         continue #We don't want to create endless loops
                     pathFromOrig.append(myID) #add myself in the first available 0 spot
                     msg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig)
-                    logging.info("Got Route Disc. Sending Disc msg " + hex(msg))
+                    logging.info("Not for me. Sending Disc msg " + hex(msg))
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                    logging.info("Sending " + hex(msg))
             
         if msgType == 2: #Route Reply
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(newMsg)
@@ -153,6 +155,7 @@ while not(testDone):
                 #Send a data msg!
                 newMsg = makeMsgData(origID, msgID, myID, destID, path2Node[destID-1])
                 sendMsg(txdevice, newMsg, rxdevice) #auto Rx blanking
+                logging.info("Sending " + hex(msg))
                 
             else: # Check if it's our turn to send this msg (comes from the previous person)
                 # We should be right before the sender
@@ -164,6 +167,7 @@ while not(testDone):
                     msg = makeMsgRouteReply(origID, msgIDs[1], myID, destID, pathFromOrig)
                     msgIDs[1] = (msgIDs[1] + 1) % 16
                     sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                    logging.info("Sending " + hex(msg))
 
         if msgType == 3: #Data Message
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(newMsg)
@@ -186,10 +190,10 @@ while not(testDone):
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
                 #Then I send it along!
                 newMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig)
-                logging.info("Received msg from node " + str(srcID) +
-                             " Sending along " + hex(newMsg))
+                logging.info("Received msg from node " + str(srcID))
                 msg = newMsg #Just keep the message untouched
                 sendMsg(txdevice, msg, rxdevice) #auto RX blanking
+                logging.info("Sending " + hex(newMsg))
                 
     time.sleep(0.01)
     
