@@ -134,6 +134,8 @@ def readMsg(msg, logger='None'):
     srcID  = byteList[3]
     destID  = byteList[4]
     pathFromOrig = byteList[5:] #and the rest
+
+    pathFromOrig = remove0s(pathFromOrig)
     hopCount = len(pathFromOrig) + 1
     
     #And return
