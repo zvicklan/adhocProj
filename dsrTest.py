@@ -143,7 +143,9 @@ while not(testDone):
                 #Print the message!
                 logging.info("Received Route Reply from node " + str(srcID) +
                              " with path " + str(pathFromOrig))
-                testDone = True #TODO Temporary logic for test - next send a data message
+                #Send a data msg!
+                newMsg = makeMsgData(origID, msgID, myID, destID, path2Node[destID-1])
+                sendMsg(txdevice, newMsg, rxDevice) #auto Rx blanking
                 
             else: # Check if it's our turn to send this msg (comes from the previous person)
                 # We should be right before the sender
