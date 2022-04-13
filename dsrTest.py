@@ -132,9 +132,6 @@ while not(testDone):
             if myID not in wholePath:
                 continue #Skip if it's not something involving us
             
-            path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
-            logging.info("Got Route Reply. Updated routing cache to " + str(path2Node[destID-1]))
-            
             if origID == myID: # We got a response!
                 #Send the ACK
                 sendAck(txdevice, rxMsg, rxdevice, logging)
@@ -142,6 +139,9 @@ while not(testDone):
                 #Print the message!
                 logging.info("Received Route Reply from node " + str(srcID) +
                              " with path " + str(wholePath))
+                path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
+                logging.info("Got Route Reply. Updated routing cache to " + str(path2Node[destID-1]))
+                
                 #Send a data msg!
                 path = path2Node[destID-1]
                 dataMsg = makeMsgData(origID, msgID, myID, destID, path[:-1])
@@ -154,7 +154,10 @@ while not(testDone):
                 if imNext:
                     #I'm next! First send ACK
                     sendAck(txdevice, rxMsg, rxdevice, logging)
-                    
+
+                    path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
+                    logging.info("Got Route Reply. Updated routing cache to " + str(path2Node[destID-1]))
+                
                     # Then forward it along!
                     msg = makeMsgRouteReply(origID, msgIDs[1], myID, destID, pathFromOrig)
                     msgIDs[1] = (msgIDs[1] + 1) % 16
