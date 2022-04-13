@@ -68,45 +68,67 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     #Carry out the loop, listening
     while awaitingACK and not timedOut:
         logging.info("sendWithAck loop")
+        logging.info("A " + getFileTimeStamp())
         #Check for a message
         if rxdevice.rx_code_timestamp != timestamp:
+            logging.info("B " + getFileTimeStamp())
             (timestamp, rxMsg, msgType_rx) = loadNewMsg(rxdevice, timestamp, logging)
             logging.info("sendWithAck received: " + hex(rxMsg)
                          + ", type " + str(msgType))
-
+            
+            logging.info("C " + getFileTimeStamp())
             #Check if it's one we want:
             if msgType_rx: #!= 0
                 toParse = deAckMsg(rxMsg) #returns rxMsg if rxMsg not an ACK
                 
+                logging.info("D " + getFileTimeStamp())
                 origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(toParse)
                 #Logic for Route Disc/Route Reply
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc
                         if (origID_rx, msgID_rx) == (origID, msgID): #same msg
                             #It's the same msg! We got it!
+                            
+                            logging.info("E " + getFileTimeStamp())
                             awaitingACK = False
                 elif msgType_rx == msgType and isAckMsg(rxMsg):
                     if (origID, msgID, srcID) == (origID_rx, msgID_rx, srcID_rx):
                         #It's the same msg! We got it!
+                        
+                        logging.info("F " + getFileTimeStamp())
                         awaitingACK = False
 
-        #Check if we want to retransmit            
+        #Check if we want to retransmit
+                        
+        logging.info("G " + getFileTimeStamp())
         if awaitingACK: #Just so we skip this when we find the msg
+            
+            logging.info("H " + getFileTimeStamp())
             currTime = datetime.now()
             timeDiff = currTime - startTime
             logging.info("Delay " + str(timeDiff.total_seconds()))
             #If it's been long enough, time out
             if timeDiff.total_seconds() > maxWait:
+                
+                logging.info("I " + getFileTimeStamp())
                 timedOut = 1
             else:
+                
+                logging.info("J " + getFileTimeStamp())
                 txTimeDiff = currTime - lastTx
                 logging.info("TX Delay " + str(txTimeDiff.total_seconds()))
+                
+                logging.info("K " + getFileTimeStamp())
                 if txTimeDiff.total_seconds() > reTxInterval:
                     sendMsg(txdevice, msg, rxdevice, logging)
                     lastTx = currTime
 
             #And wait a bit
+            
+            logging.info("L " + getFileTimeStamp())
             time.sleep(0.01)
+            
+            logging.info("M " + getFileTimeStamp())
                     
     if not awaitingACK:
         logging.info("sendWithAck recognized ACK msg")
