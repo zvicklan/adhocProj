@@ -62,7 +62,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     lastTx = startTime
     
     #Send the first time, then start listening
-    sendMsg(txdevice, msg, rxdevice)
+    sendMsg(txdevice, msg, rxdevice, logging)
     
     #Carry out the loop, listening
     while awaitingACK and not timedOut:
