@@ -1,12 +1,18 @@
-from ioFunctions import *
 from cacheFunctions import *
+from datetime import datetime
+
+def getTimeStamp():
+    #Returns a time (float)
+    now = datetime.now()
+    timeStamp = 3600*now.hour + 60*now.minute + now.second + now.microsecond*1e-6
+    return timeStamp
 
 #General helper function for going Byte String to Msg
 def bytes2Msg(byteList, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow([getMsgTimeStamp()] + byteList)
+        logger.writerow([getTimeStamp()] + byteList)
         
     msg = 0
     #Loop through the bytes to make a msg
@@ -79,7 +85,7 @@ def msg2Bytes(msg, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow([getMsgTimeStamp()] + byteList)
+        logger.writerow([getTimeStamp()] + byteList)
         
     #And output!
     return byteList 
@@ -202,4 +208,3 @@ def readMsgData(msg, logger='None'):
 
     #And return
     return origID, msgID, srcID, destID, hopCount, pathFromOrig
-
