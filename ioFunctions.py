@@ -108,7 +108,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                     
     if not awaitingACK:
         logging.info("sendWithAck recognized ACK msg")
-        
+    logging.info("Leaving sendWithAck")
     retVal = 1-timedOut #1 if we were successful, 0 else
     return retVal
 
@@ -118,7 +118,7 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     protocol = None #Default 1
     pulselength = None #Default 350
 
-    time.sleep(0.1)
+    time.sleep(0.5)
     #Do some logic to avoid receiving our own signal
     if rxdevice != "None":
         rxdevice.disable_rx()
