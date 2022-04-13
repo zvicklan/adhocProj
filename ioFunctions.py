@@ -67,6 +67,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     
     #Carry out the loop, listening
     while awaitingACK and not timedOut:
+        logging.info("sendWithAck loop")
         #Check for a message
         if rxdevice.rx_code_timestamp != timestamp:
             (timestamp, rxMsg, msgType_rx) = loadNewMsg(rxdevice, timestamp, logging)
@@ -91,11 +92,13 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
         if awaitingACK: #Just so we skip this when we find the msg
             currTime = datetime.now()
             timeDiff = currTime - startTime
+            logging.info("Delay " + str(timeDiff.total_seconds))
             #If it's been long enough, time out
             if timeDiff.total_seconds() > maxWait:
                 timedOut = 1
             else:
                 txTimeDiff = currTime - lastTx
+                logging.info("TX Delay " + str(txTimeDiff.total_seconds))
                 if txTimeDiff.total_seconds() > reTxInterval:
                     sendMsg(txdevice, msg, rxdevice, logging)
                     lastTx = currTime
