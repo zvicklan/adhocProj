@@ -141,6 +141,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
 def sendMsg(txdevice, msg, rxdevice, logging):
     #Takes in the rfdevice and msg (as an int) and sends it out
 
+    logging.info("1 " + str(datetime.now().microsecond)) 
     protocol = None #Default 1
     pulselength = None #Default 350
 
@@ -150,15 +151,24 @@ def sendMsg(txdevice, msg, rxdevice, logging):
         rxdevice.disable_rx()
 
     #Flash on our antenna, send, turn it off
+        
+    logging.info("1.5 " + str(datetime.now().microsecond))
     txdevice.enable_tx()
+    
+    logging.info("1.9 " + str(datetime.now().microsecond))
     logging.info("sendMsg: " + hex(msg))
+    logging.info("2 " + str(datetime.now().microsecond))
     txdevice.tx_code(msg, protocol, pulselength)
+    logging.info("3 " + str(datetime.now().microsecond))
     txdevice.disable_tx()
-
+    
+    logging.info("4 " + str(datetime.now().microsecond))
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
 
+    logging.info("5 " + str(datetime.now().microsecond))
+    
 def getFileTimeStamp():
     #Returns a string in format 'mmdd_hhmm'
     now = datetime.now()
