@@ -60,6 +60,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     msgType = getMsgType(msg)
     startTime = datetime.now()
     lastTx = startTime
+    timestamp = None
     
     #Send the first time, then start listening
     sendMsg(txdevice, msg, rxdevice, logging)
