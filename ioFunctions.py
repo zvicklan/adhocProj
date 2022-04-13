@@ -76,14 +76,16 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
 
             #Check if it's one we want:
             if msgType_rx: #!= 0
-                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(rxMsg)
+                toParse = deAckMsg(rxMsg) #returns rxMsg if rxMsg not an ACK
+                
+                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(toParse)
                 #Logic for Route Disc/Route Reply
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc
                         if (origID_rx, msgID_rx) == (origID, msgID): #same msg
                             #It's the same msg! We got it!
                             awaitingACK = False
-                elif msgType_rx == msgType:
+                elif msgType_rx == msgType and isAckMsg(rxMsg):
                     if (origID, msgID, srcID) == (origID_rx, msgID_rx, srcID_rx):
                         #It's the same msg! We got it!
                         awaitingACK = False
