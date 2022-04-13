@@ -85,7 +85,7 @@ while not(testDone):
                      ", msgType " + str(msgType) + "]")
         
         #We will do processing if this is a real message
-        if msgType and isAck(rxMsg): #It's a real msg and an ACK (I'm not in the right state, so skip)
+        if msgType and isAckMsg(rxMsg): #It's a real msg and an ACK (I'm not in the right state, so skip)
             continue
         if msgType == 1: #Route Discovery
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(rxMsg)
