@@ -68,7 +68,7 @@ if myID == 1: #We'll have the first guy kick this off
     sendMsg(txdevice, msg, rxdevice, logging) #auto RX blanking
 
 timestamp = None
-logging.info("Listening for codes on GPIO " + str(argsRx.gpio))
+logging.info("Listening for codes on GPIO")
 
 #TODO: Need to figure out a plan for logic to create messages
 #  Might just be spamming msgs 1->5
