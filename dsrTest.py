@@ -164,21 +164,19 @@ while not(testDone):
 
             #Error checking that we should be getting this message
             if srcID not in wholePath:
-                logging.info("Received msg from node " + str(srcID) +
-                             "not in route " + str(wholePath))
+                logging.info("Not in route " + str(wholePath))
                 continue
             
             senderInd = wholePath.index(srcID) #Who this came from
             #Only send if I'm the next stop in the route
             if destID == myID: #It's for me!
                 sendAck(txdevice, rxMsg, rxdevice, logging)
-                logging.info("Received msg from node " + str(srcID) +
-                             ". Msg was " + hex(rxMsg))
+                logging.info("Received data msg from node " + str(origID))
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
                 sendAck(txdevice, rxMsg, rxdevice, logging) #Send the ACK
                 #Then I send it along!                
                 dataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
-                logging.info("Received msg from node " + str(origID))
+                logging.info("Forwarding msg from node " + str(srcID))
                 sendMsgWithAck(txdevice, dataMsg, rxdevice, logging) #auto RX blanking
                 
     time.sleep(0.01)
