@@ -1,5 +1,5 @@
 from cacheFunctions import *
-import time
+from datetime import datetime
 
 def getTimeStamp():
     #Returns a time (float)

@@ -58,7 +58,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     
     origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(msg) #want to match these
     msgType = getMsgType(msg)
-    startTime = datetime.datetime.now()
+    startTime = datetime.now()
     lastTx = startTime
     
     #Send the first time, then start listening
@@ -88,7 +88,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
 
         #Check if we want to retransmit            
         if awaitingACK: #Just so we skip this when we find the msg
-            currTime = datetime.datetime.now()
+            currTime = datetime.now()
             timeDiff = currTime - startTime
             #If it's been long enough, time out
             if timeDiff.total_seconds() > maxWait:
