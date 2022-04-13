@@ -56,7 +56,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     awaitingACK = True
     timedOut = 0
     
-    origID, msgID, srcID = readMsg(msg) #want to match these
+    origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(msg) #want to match these
     msgType = getMsgType(msg)
     startTime = datetime.datetime.now()
     lastTx = startTime
@@ -74,7 +74,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
 
             #Check if it's one we want:
             if msgType_rx: #!= 0
-                origID_rx, msgID_rx, srcID_rx = readMsg(rxMsg)
+                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(rxMsg)
                 #Logic for Route Disc/Route Reply
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc
