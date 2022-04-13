@@ -99,6 +99,9 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                 if txTimeDiff.total_seconds() > reTxInterval:
                     sendMsg(txdevice, msg, rxdevice, logging)
                     lastTx = currTime
+
+            #And wait a bit
+            time.sleep(0.01)
                     
     if not awaitingACK:
         logging.info("sendWithAck recognized ACK msg")
