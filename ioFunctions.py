@@ -80,13 +80,16 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc
                         if (origID_rx, msgID_rx) == (origID, msgID): #same msg
-                            imNext = nextInPath(origID, destID, pathFromOrig, srcID_rx, myID)
+                            imNext = nextInPath(origID, destID, pathFromOrig, myIDsrcID_rx)
+                            print(imNext)
                             if imNext:
                                 #It's the same msg! We got it!
+                                print("HERE")
                                 awaitingACK = False
                 elif msgType_rx == msgType and isAckMsg(rxMsg):
                     if (origID, msgID, srcID) == (origID_rx, msgID_rx, srcID_rx):
                         #It's the same msg! We got it!
+                        print("here")
                         awaitingACK = False
 
         #Check if we want to retransmit
@@ -144,16 +147,16 @@ def getFileTimeStamp():
     timeStamp = now.strftime('%m%d_%H%M%S')
     return timeStamp
 
-def nextInPath(origID, destID, pathFromOrig, srcID, myID):
+def nextInPath(origID, destID, pathFromOrig, node1, node2):
     #Builds the complete path, then checks if I'm next
     wholePath = pathFromOrig.copy()
     wholePath.insert(0, origID)
     wholePath.append(destID) # Now this is the whole path   
 
     # We should be right before the sender
-    srcInd = wholePath.index(srcID)
-    myInd  = wholePath.index(myID)
+    node1Ind = wholePath.index(node1)
+    node2Ind  = wholePath.index(node2)
 
-    imNext = srcInd == (myInd + 1)
+    imNext = node2Ind == (node1Ind + 1)
 
     return imNext

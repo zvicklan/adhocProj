@@ -185,7 +185,7 @@ while not(testDone):
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
                 sendAck(txdevice, rxMsg, rxdevice, logging) #Send the ACK
                 #Then I send it along!                
-                newdataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
+                dataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
                 logging.info("Received msg from node " + str(srcID))
                 sendMsgWithAck(txdevice, dataMsg, rxdevice, logging) #auto RX blanking
                 
