@@ -57,15 +57,13 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     timedOut = 0
     
     origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(msg) #want to match these
+    timestamp = None
+    
+    #Send the first time, then start listening
+    sendMsg(txdevice, msg, rxdevice, logging)
     msgType = getMsgType(msg)
     startTime = datetime.now()
     lastTx = startTime
-    timestamp = None
-    
-    logging.info("Start " + str(datetime.now().microsecond))
-    #Send the first time, then start listening
-    sendMsg(txdevice, msg, rxdevice, logging)
-    logging.info("0 " + str(datetime.now().microsecond))
     #Carry out the loop, listening
     while awaitingACK and not timedOut:
         #Check for a message
@@ -101,7 +99,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                 if txTimeDiff.total_seconds() > reTxInterval:
                     logging.info("TX Delay " + str(txTimeDiff.total_seconds()) + " Re-transmit")
                     sendMsg(txdevice, msg, rxdevice, logging)
-                    lastTx = currTime
+                    lastTx = datetime.now()
 
             #And wait a bit
             time.sleep(0.01)
