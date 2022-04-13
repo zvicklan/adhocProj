@@ -174,10 +174,12 @@ while not(testDone):
             senderInd = wholePath.index(srcID) #Who this came from
             #Only send if I'm the next stop in the route
             if destID == myID: #It's for me!
+                sendAck(txdevice, rxMsg, rxdevice, logging)
                 logging.info("Received msg from node " + str(srcID) +
                              ". Msg was " + hex(rxMsg))
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
-                #Then I send it along!
+                sendAck(txdevice, rxMsg, rxdevice, logging) #Send the ACK
+                #Then I send it along!                
                 newdataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
                 logging.info("Received msg from node " + str(srcID))
                 sendMsgWithAck(txdevice, dataMsg, rxdevice, logging) #auto RX blanking

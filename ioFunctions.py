@@ -51,8 +51,8 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     #   Same msg ID
     #   Self as srcID (same srcID)
     
-    maxWait = 1.5 #max time to allow this to wait
-    reTxInterval = .5 #time between retransmits
+    maxWait = 1 #max time to allow this to wait
+    reTxInterval = .25 #time between retransmits
     awaitingACK = True
     timedOut = 0
     
@@ -120,7 +120,7 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     protocol = None #Default 1
     pulselength = None #Default 350
 
-    time.sleep(0.5)
+    time.sleep(0.05)
     #Do some logic to avoid receiving our own signal
     if rxdevice != "None":
         rxdevice.disable_rx()
