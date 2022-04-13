@@ -12,6 +12,7 @@ from ioFunctions import *
 from cacheFunctions import *
 from random import *
 import numpy as np
+import faulthandler
 
 rxdevice = None
 txdevice = None
@@ -26,6 +27,8 @@ def exithandler(signal, frame):
 logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
                     format='%(asctime)-15s.%(msecs)03d - [%(levelname)s] %(module)s: %(message)s', )
 
+
+faulthandler.enable()
 
 # RX setup
 rxdevice = rxSetup()
