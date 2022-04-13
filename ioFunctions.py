@@ -39,7 +39,7 @@ def sendAck(txdevice, msg, rxdevice, logging):
 
     #Ignore if this is alredy an ACK
     if isAckMsg(msg):
-        logging.info("sendAck ignoring " + hex(msg)". Already an ACK")
+        logging.info("sendAck ignoring " + hex(msg) + ". Already an ACK")
     else:
         ackMsg = createAckMsg(msg)
         sendMsg(txdevice, ackMsg, rxdevice, logging)
