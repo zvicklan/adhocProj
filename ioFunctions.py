@@ -60,7 +60,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     timestamp = None
     
     #Send the first time, then start listening
-    logging.info("sendWithAck sengind: " + hex(msg))
+    logging.info("sendWithAck sending: " + hex(msg))
     sendMsg(txdevice, msg, rxdevice, logging)
     msgType = getMsgType(msg)
     startTime = datetime.now()
@@ -126,7 +126,6 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     txdevice.enable_tx()
     logging.info("sendMsg: " + hex(msg))
     txdevice.tx_code(msg, protocol, pulselength)
-    logging.info("hi 1")
     txdevice.disable_tx()
     
     time.sleep(0.1)
