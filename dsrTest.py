@@ -109,7 +109,7 @@ while not(testDone):
                     if hops2Node[srcID-1] > hopCount or msgID != lastMsgID:
                         path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
                         logging.info("Got Route Disc for me. Updated routing cache to "
-                                     + str(path2Node[origID-1]))
+                                     + str(path2Node))
                         msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
                         sendMsgWithAck(txdevice, msg, rxdevice, logging) #auto RX blanking
                         
