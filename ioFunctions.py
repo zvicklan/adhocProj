@@ -66,6 +66,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     lastTx = startTime
     #Carry out the loop, listening
     while awaitingACK and not timedOut:
+        logging.info("sendWithAck loop")
         #Check for a message
         if rxdevice.rx_code_timestamp != timestamp:
             (timestamp, rxMsg, msgType_rx) = loadNewMsg(rxdevice, timestamp, logging)
@@ -125,13 +126,16 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     txdevice.enable_tx()
     logging.info("sendMsg: " + hex(msg))
     txdevice.tx_code(msg, protocol, pulselength)
+    logging.info("hi 1")
     txdevice.disable_tx()
-
+    logging.info("hi 2")
+    
     time.sleep(0.1)
+
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
-    
+    logging.info("hi out")
 def getFileTimeStamp():
     #Returns a string in format 'mmdd_hhmm'
     now = datetime.now()

@@ -24,7 +24,7 @@ def exithandler(signal, frame):
 
 #Logging setup
 logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
-                    format='%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s', )
+                    format='%(asctime)-15s.%(msecs)03d - [%(levelname)s] %(module)s: %(message)s', )
 
 
 # RX setup
