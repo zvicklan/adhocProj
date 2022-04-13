@@ -6,7 +6,7 @@ def bytes2Msg(byteList, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow([getMsgTimeStamp()] + byteList)
+        logger.writerow([getTimeStamp()] + byteList)
         
     msg = 0
     #Loop through the bytes to make a msg
