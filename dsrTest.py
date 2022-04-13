@@ -132,7 +132,7 @@ while not(testDone):
             
             if origID == myID: # We got a response!
                 #Send the ACK
-                sendAck(txdevice, msg, rxdevice, logging)
+                sendAck(txdevice, rxMsg, rxdevice, logging)
                 
                 #Print the message!
                 logging.info("Received Route Reply from node " + str(srcID) +
@@ -149,7 +149,7 @@ while not(testDone):
 
                 if srcInd == myInd + 1:
                     #I'm next! First send ACK
-                    sendAck(txdevice, msg, rxdevice, logging)
+                    sendAck(txdevice, rxMsg, rxdevice, logging)
                     
                     # Then forward it along!
                     msg = makeMsgRouteReply(origID, msgIDs[1], myID, destID, pathFromOrig)

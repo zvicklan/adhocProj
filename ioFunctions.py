@@ -51,8 +51,8 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     #   Same msg ID
     #   Self as srcID (same srcID)
     
-    maxWait = 0.5 #max time to allow this to wait
-    reTxInterval = 0.1 #time between retransmits
+    maxWait = 1.5 #max time to allow this to wait
+    reTxInterval = .5 #time between retransmits
     awaitingACK = True
     timedOut = 0
     
