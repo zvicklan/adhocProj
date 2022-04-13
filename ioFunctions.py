@@ -83,8 +83,8 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                             awaitingACK = False
                 elif msgType_rx == msgType:
                     if (origID, msgID, srcID) == (origID_rx, msgID_rx, srcID_rx):
-                    #It's the same msg! We got it!
-                    awaitingACK = False
+                        #It's the same msg! We got it!
+                        awaitingACK = False
 
         #Check if we want to retransmit            
         if awaitingACK: #Just so we skip this when we find the msg
