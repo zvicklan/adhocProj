@@ -128,7 +128,6 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     txdevice.tx_code(msg, protocol, pulselength)
     logging.info("hi 1")
     txdevice.disable_tx()
-    logging.info("hi 2")
     
     time.sleep(0.1)
 
