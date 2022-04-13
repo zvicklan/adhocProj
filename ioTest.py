@@ -2,5 +2,5 @@ from ioFunctions import *
 
 a = getFileTimeStamp()
 print(a)
-b = getMsgTimeStamp()
-print(b)
+
+print(nextInPath(1,5, [2,3,4], 1, 3)) #s/b false

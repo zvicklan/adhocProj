@@ -80,8 +80,10 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc
                         if (origID_rx, msgID_rx) == (origID, msgID): #same msg
-                            #It's the same msg! We got it!
-                            awaitingACK = False
+                            imNext = nextInPath(origID, destID, pathFromOrig, srcID_rx, myID)
+                            if imNext:
+                                #It's the same msg! We got it!
+                                awaitingACK = False
                 elif msgType_rx == msgType and isAckMsg(rxMsg):
                     if (origID, msgID, srcID) == (origID_rx, msgID_rx, srcID_rx):
                         #It's the same msg! We got it!
@@ -141,3 +143,17 @@ def getFileTimeStamp():
     now = datetime.now()
     timeStamp = now.strftime('%m%d_%H%M%S')
     return timeStamp
+
+def nextInPath(origID, destID, pathFromOrig, srcID, myID):
+    #Builds the complete path, then checks if I'm next
+    wholePath = pathFromOrig.copy()
+    wholePath.insert(0, origID)
+    wholePath.append(destID) # Now this is the whole path   
+
+    # We should be right before the sender
+    srcInd = wholePath.index(srcID)
+    myInd  = wholePath.index(myID)
+
+    imNext = srcInd == (myInd + 1)
+
+    return imNext

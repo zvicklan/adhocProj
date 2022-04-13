@@ -149,10 +149,9 @@ while not(testDone):
                 
             else: # Check if it's our turn to send this msg (comes from the previous person)
                 # We should be right before the sender
-                srcInd = wholePath.index(srcID)
-                myInd  = wholePath.index(myID)
+                imNext = nextInPath(origID, destID, pathFromOrig, srcID, myID)
 
-                if srcInd == myInd + 1:
+                if imNext:
                     #I'm next! First send ACK
                     sendAck(txdevice, rxMsg, rxdevice, logging)
                     
