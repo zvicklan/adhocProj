@@ -107,7 +107,9 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
              
     if not awaitingACK:
         logging.info("sendWithAck recognized ACK msg")
-    logging.info("Leaving sendWithAck")
+    else:
+        logging.info("sendWithAck timed out")
+        
     retVal = 1-timedOut #1 if we were successful, 0 else
     return retVal
 
