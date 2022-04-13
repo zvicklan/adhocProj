@@ -115,7 +115,7 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     protocol = None #Default 1
     pulselength = None #Default 350
 
-    time.sleep(0.5)
+    time.sleep(0.4)
     
     #Do some logic to avoid receiving our own signal
     if rxdevice != "None":
@@ -126,7 +126,8 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     logging.info("sendMsg: " + hex(msg))
     txdevice.tx_code(msg, protocol, pulselength)
     txdevice.disable_tx()
-    
+
+    time.sleep(0.1)
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
