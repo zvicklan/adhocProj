@@ -1,9 +1,12 @@
+from ioFunctions import *
+from cacheFunctions import *
+
 #General helper function for going Byte String to Msg
 def bytes2Msg(byteList, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow(byteList)
+        logger.writerow([getMsgTimeStamp()] + byteList)
         
     msg = 0
     #Loop through the bytes to make a msg
@@ -14,6 +17,55 @@ def bytes2Msg(byteList, logger='None'):
             msg = msg * (2**4) + b
     #And output!
     return msg
+
+def isAckMsg(msg):
+#Checks for ACK by checking one bit
+    bitNum = 28
+    bitPow = bitNum - 1
+
+    isACK = 0
+    #First, we want to check it isn't already an ACK
+    shifted = msg // (2**bitPow)
+    if shifted % 2 == 1:
+        #Then we're an ACK
+        isACK = 1
+        
+    return isACK
+
+def createAckMsg(msg):
+#Creates an ACK msg by setting one bit
+    bitNum = 28
+    bitPow = bitNum - 1
+
+    #First, we want to check it isn't already an ACK
+    if not isAckMsg(msg):
+        #Then we're good to go
+        msgNew = msg + 2**bitPow
+
+        #If something isn't working, error
+        if not isAckMsg(msgNew):
+            raise Exception("ACK Creation is not working properly: " +
+                            hex(msg) + " led to " + hex(msgNew))        
+    else:
+        msgNew = msg
+        
+    #And return the result
+    return msgNew
+
+def deAckMsg(msg):
+#Removes the ACK from a msg
+    bitNum = 28
+    bitPow = bitNum - 1
+
+    #First, we want to check it is already an ACK
+    if isAckMsg(msg):
+        #Then we're good to go
+        msgNew = msg - 2**bitPow      
+    else: #Wasn't an ACK anyway
+        msgNew = msg
+        
+    #And return the result
+    return msgNew
 
 #General helper function for going Msg to Byte String
 def msg2Bytes(msg, logger='None'):
@@ -27,7 +79,7 @@ def msg2Bytes(msg, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow(byteList)
+        logger.writerow([getMsgTimeStamp()] + byteList)
         
     #And output!
     return byteList 
@@ -45,107 +97,109 @@ def getMsgType(msg):
         lenCount = lenCount + 1
 
     if lenCount != 8 or (msg < 8): #s/b 8 nibbles and min val s/b 8
-        msg = 0 #throw it out
+        msgType = 0 #throw it out
     else:
-        msg = msg - 8
+        msgType = msg - 8
         
     #And output. This is the last Byte (hence the msg Type)
-    return msg
+    return msgType
 
-def makeMsgRouteDisc(origID, msgID, srcID, destID, logger='None'):
-    #Combines everything together into a message for sending
-    
+def makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger='None'):
+    #Base helper function for everything (since msgs are so similar)
+        
     #Build the Bytes - Total message is 8 Nibbles
     byteList = [0] * 8
-    byteList[0] = 1
+    byteList[0] = msgType
     byteList[1] = origID
-    byteList[2] = 0 # overflow for msgID
-    byteList[3] = msgID
-    byteList[4] = srcID
-    byteList[5] = destID
+    byteList[2] = msgID
+    byteList[3] = srcID
+    byteList[4] = destID
 
-    #And return the made msg
-    return bytes2Msg(byteList, logger)
-    
-def readMsgRouteDisc(msg, logger='None'):
-    #Outputs in order origID, msgID, srcID, destID
-    
-    #Get the bytes
-    byteList = msg2Bytes(msg, logger)
-        
-    # Build the message
-    origID = byteList[1]
-    msgID  = byteList[3] + 16*byteList[2]
-    srcID  = byteList[4]
-    destID = byteList[5]
-
-    #And return
-    return origID, msgID, srcID, destID
-
-def makeMsgRouteReply(origID, msgID, srcID, pathFromDest, logger='None'):
-    #Combines everything together into a message for sending
-    
-    #Build the Bytes - Total message is 8 nibbles
-    byteList = [0] * 8
-    byteList[0] = 2
-    byteList[1] = origID
-    byteList[2] = 0 # overflow for msgID
-    byteList[3] = msgID 
-    byteList[4] = srcID
-    ind = 5
-    for node in pathFromDest:
-        byteList[ind] = node
-        ind = ind + 1
-        
-    #And return the made msg
-    return bytes2Msg(byteList, logger)
-    
-def readMsgRouteReply(msg, logger='None'):
-    #Outputs in order origID, msgID, srcID, hopCount, pathFromDest
-    
-    #Get the bytes
-    byteList = msg2Bytes(msg, logger)
-        
-    # Build the message
-    origID = byteList[1]
-    msgID  = byteList[3] + 16*byteList[2]
-    srcID  = byteList[4]
-    pathFromDest = byteList[5:] #and the rest
-    hopCount = len(pathFromDest)
-    #And return
-    return origID, msgID, srcID, hopCount, pathFromDest
-
-def makeMsgData(origID, msgID, srcID, pathFromOrig, logger='None'):
-    #Combines everything together into a message for sending
-    
-    #Build the Bytes - Total message is 8 nibbles
-    byteList = [0] * 8
-    byteList[0] = 3
-    byteList[1] = origID
-    byteList[2] = 0 # overflow for msgID
-    byteList[3] = msgID 
-    byteList[4] = srcID
     ind = 5
     for node in pathFromOrig:
         byteList[ind] = node
         ind = ind + 1
-
+        
     #And return the made msg
     return bytes2Msg(byteList, logger)
-    
-def readMsgData(msg, logger='None'):
-    #Outputs in order origID, msgID, srcID, hopCount, pathFromOrig
+
+def readMsg(msg, logger='None'):
+    #Default function for reading all msgs
     
     #Get the bytes
     byteList = msg2Bytes(msg, logger)
         
     # Build the message
     origID = byteList[1]
-    msgID  = byteList[3] + 16*byteList[2]
-    srcID  = byteList[4]
+    msgID  = byteList[2]
+    srcID  = byteList[3]
+    destID  = byteList[4]
     pathFromOrig = byteList[5:] #and the rest
-    hopCount = len(pathFromOrig)
+
+    pathFromOrig = remove0s(pathFromOrig)
+    hopCount = len(pathFromOrig) + 1
     
     #And return
-    return origID, msgID, srcID, hopCount, pathFromOrig
+    return origID, msgID, srcID, destID, hopCount, pathFromOrig
+
+def makeMsgRouteDisc(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
+    #Combines everything together into a message for sending
+
+    msgType = 1
+    
+    #Use the helper function
+    msg = makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger)
+        
+    #And return the made msg
+    return msg
+
+def readMsgRouteDisc(msg, logger='None'):
+    #Outputs in order origID, msgID, srcID, destID, hopCount, pathFromOrig
+    
+    #Get the bytes
+    (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsg(msg, logger)
+
+    #And return
+    return origID, msgID, srcID, destID, hopCount, pathFromOrig
+
+def makeMsgRouteReply(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
+    #Combines everything together into a message for sending
+
+    msgType = 2
+    
+    #Use the helper function
+    msg = makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger)
+        
+    #And return the made msg
+    return msg
+    
+def readMsgRouteReply(msg, logger='None'):
+    #Outputs in order origID, msgID, srcID, destID, hopCount, pathFromOrig
+    
+    #Get the bytes
+    (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsg(msg, logger)
+
+    #And return
+    return origID, msgID, srcID, destID, hopCount, pathFromOrig
+
+
+def makeMsgData(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
+    #Combines everything together into a message for sending
+
+    msgType = 3
+    
+    #Use the helper function
+    msg = makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger)
+        
+    #And return the made msg
+    return msg
+    
+def readMsgData(msg, logger='None'):
+    #Outputs in order origID, msgID, srcID, destID, hopCount, pathFromOrig
+    
+    #Get the bytes
+    (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsg(msg, logger)
+
+    #And return
+    return origID, msgID, srcID, destID, hopCount, pathFromOrig
 
