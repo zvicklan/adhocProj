@@ -69,7 +69,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     while awaitingACK and not timedOut:
         #Check for a message
         if rxdevice.rx_code_timestamp != timestamp:
-            (timestamp, newMsg, msgType) = loadNewMsg(rxdevice, timestamp, logging)
+            (timestamp, rxMsg, msgType) = loadNewMsg(rxdevice, timestamp, logging)
             logging.info("sendWithAck received: " + hex(rxMsg)
                          + ", type " + str(msgType))
 
