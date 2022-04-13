@@ -131,33 +131,25 @@ while not(testDone):
             #Capture the info as long as we're involved
             if myID not in wholePath:
                 continue #Skip if it's not something involving us
+
+            # We should be right before the sender
+            imNext = nextInPath(origID, destID, pathFromOrig, myID, srcID)
             
-            if origID == myID: # We got a response!
+            if imNext:
                 #Send the ACK
                 sendAck(txdevice, rxMsg, rxdevice, logging)
-                
                 #Print the message!
+                path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
                 logging.info("Received Route Reply from node " + str(srcID) +
                              " with path " + str(wholePath))
-                path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
-                logging.info("Got Route Reply. Updated routing cache to " + str(path2Node[destID-1]))
-                
-                #Send a data msg!
-                path = path2Node[destID-1]
-                dataMsg = makeMsgData(origID, msgID, myID, destID, path[:-1])
-                sendMsgWithAck(txdevice, dataMsg, rxdevice, logging) #auto Rx blanking
-                
-            else: # Check if it's our turn to send this msg (comes from the previous person)
-                # We should be right before the sender
-                imNext = nextInPath(origID, destID, pathFromOrig, srcID, myID)
-
-                if imNext:
-                    #I'm next! First send ACK
-                    sendAck(txdevice, rxMsg, rxdevice, logging)
-
-                    path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
-                    logging.info("Got Route Reply. Updated routing cache to " + str(path2Node[destID-1]))
-                
+                logging.info("Updated routing cache to " + str(path2Node))
+                if origID == myID: # We got a response!
+                    #Send a data msg!
+                    path = path2Node[destID-1]
+                    dataMsg = makeMsgData(origID, msgID, myID, destID, path[:-1])
+                    sendMsgWithAck(txdevice, dataMsg, rxdevice, logging) #auto Rx blanking
+                    
+                else: # Check if it's our turn to send this msg (comes from the previous person)
                     # Then forward it along!
                     msg = makeMsgRouteReply(origID, msgIDs[1], myID, destID, pathFromOrig)
                     msgIDs[1] = (msgIDs[1] + 1) % 16
@@ -186,7 +178,7 @@ while not(testDone):
                 sendAck(txdevice, rxMsg, rxdevice, logging) #Send the ACK
                 #Then I send it along!                
                 dataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
-                logging.info("Received msg from node " + str(srcID))
+                logging.info("Received msg from node " + str(origID))
                 sendMsgWithAck(txdevice, dataMsg, rxdevice, logging) #auto RX blanking
                 
     time.sleep(0.01)

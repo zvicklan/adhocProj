@@ -80,16 +80,13 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc
                         if (origID_rx, msgID_rx) == (origID, msgID): #same msg
-                            imNext = nextInPath(origID, destID, pathFromOrig, myIDsrcID_rx)
-                            print(imNext)
+                            imNext = nextInPath(origID, destID, pathFromOrig, myID, srcID_rx)
                             if imNext:
                                 #It's the same msg! We got it!
-                                print("HERE")
                                 awaitingACK = False
                 elif msgType_rx == msgType and isAckMsg(rxMsg):
                     if (origID, msgID, srcID) == (origID_rx, msgID_rx, srcID_rx):
                         #It's the same msg! We got it!
-                        print("here")
                         awaitingACK = False
 
         #Check if we want to retransmit
