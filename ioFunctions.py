@@ -62,13 +62,14 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     lastTx = startTime
     timestamp = None
     
+    logging.info("Start " + str(datetime.now().microsecond))
     #Send the first time, then start listening
     sendMsg(txdevice, msg, rxdevice, logging)
-    
+    logging.info("0 " + str(datetime.now().microsecond))
     #Carry out the loop, listening
     while awaitingACK and not timedOut:
         logging.info("sendWithAck loop")
-        logging.info("A " + getFileTimeStamp())
+        logging.info("A " + str(datetime.now().microsecond))
         #Check for a message
         if rxdevice.rx_code_timestamp != timestamp:
             logging.info("B " + str(datetime.now().microsecond))
