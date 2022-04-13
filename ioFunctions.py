@@ -135,7 +135,7 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
-    logging.info("hi out")
+        
 def getFileTimeStamp():
     #Returns a string in format 'mmdd_hhmm'
     now = datetime.now()
