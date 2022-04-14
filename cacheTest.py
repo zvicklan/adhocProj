@@ -54,3 +54,24 @@ a = genDests(10, 3)
 print(a)
 a = genDests(1, 3)
 print(a)
+
+#getWholePath tests
+print(getWholePath(1, [2,3,4], 5))
+print(getWholePath(1, [2,3,4], 3))
+
+#getPrevNode tests
+print(getPrevNode([5,4,3,2,1], 1))
+print(getPrevNode([5,4,3,2,1], 2))
+print(getPrevNode([5,4,3,2,1], 3))
+print(getPrevNode([5,4,3,2,1], 4))
+
+#getNextNode tests
+print(getNextNode([5,4,3,2,1], 5))
+print(getNextNode([5,4,3,2,1], 4))
+print(getNextNode([5,4,3,2,1], 3))
+print(getNextNode([5,4,3,2,1], 2))
+
+#removeLinkFromCache tests
+cache = [[5, 4, 3, 2, 1], [5, 4, 3, 2], [5, 4, 3], [5, 4], 8]
+
+print(removeLinkFromCache(cache, 4, 3))
