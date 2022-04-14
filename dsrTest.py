@@ -135,7 +135,7 @@ while not(testDone):
             if myID not in wholePath:
                 continue #Skip if it's not something involving us
 
-            # We should be right before the sender
+            # We should be right before the sender (route backwards for replies)
             imNext = nextInPath(origID, destID, pathFromOrig, myID, srcID)
             
             if imNext:
