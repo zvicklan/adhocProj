@@ -207,13 +207,16 @@ while not(testDone):
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
             #Check we haven't seen it already
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
-            
+
             if not isNew: #TODO this has serious wrap-around issues I think. Need to clear this somehow
                 continue
             else:
                 #I want to clean my route cache
                 badSrcID = getPrevNode(wholePath, badDestID)
+                logging.info("Removing bad link " + str(badSrcID) + "->" + str(badDestID) +
+                             " from route cache. ")
                 removeLinkFromCache(path2Node, badSrcID, badDestID)
+                logging.info("Updated routing cache to " + str(path2Node))
 
                 #And forward the message
                 dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
