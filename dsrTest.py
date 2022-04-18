@@ -202,14 +202,14 @@ while not(testDone):
                     dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                     sendMsg(txdevice, dropMsg, rxdevice, logging)
                     print(origID)
-                    print(lstMsgIDs)
+                    print(lastMsgIDs)
                     lastMsgIDs[origID-1][3] = msgID
 
         if msgType == ROUT_DROP: #Drop Message
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
             #Check we haven't seen it already
             print(origID)
-            print(lstMsgIDs)
+            print(lastMsgIDs)
             print(ROUT_DROP)
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
             
