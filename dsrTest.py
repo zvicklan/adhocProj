@@ -157,7 +157,17 @@ while not(testDone):
                     #Send a data msg!
                     path = path2Node[destID-1]
                     dataMsg = makeMsgData(origID, msgID, myID, destID, path[1:-1])
-                    sendMsgWithAck(txdevice, dataMsg, rxdevice, logging) #auto Rx blanking
+                    ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging)
+                    if not ackRcvd:
+                        #The path broke! Send an update
+                        badDestID = getNextNode(wholePath, myID)
+                        logging.info("ACK Failed. Removing bad link " + str(myID) + "->" + str(badDestID) +
+                                     " from route cache. ")
+                        removeLinkFromCache(path2Node, myID, badDestID)
+                        logging.info("Updated routing cache to " + str(path2Node))
+                        dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
+                        sendMsg(txdevice, dropMsg, rxdevice, logging)
+                        lastMsgIDs[origID-1][3] = msgID
                     
                 else: # Check if it's our turn to send this msg (comes from the previous person)
                     # Then forward it along!
@@ -196,11 +206,10 @@ while not(testDone):
                 logging.info("Forwarding msg from node " + str(srcID))
 
                 ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging)
-                print(ackRcvd)
                 if not ackRcvd:
                     #The path broke! Send an update
                     badDestID = getNextNode(wholePath, myID)
-                    logging.info("ACK Failed. Removing bad link " + str(badSrcID) + "->" + str(badDestID) +
+                    logging.info("ACK Failed. Removing bad link " + str(myID) + "->" + str(badDestID) +
                                  " from route cache. ")
                     removeLinkFromCache(path2Node, myID, badDestID)
                     logging.info("Updated routing cache to " + str(path2Node))
@@ -217,6 +226,7 @@ while not(testDone):
                 continue
             else:
                 #I want to clean my route cache
+                wholePath = getWholePath(origID, pathFromOrig, badDestID)
                 badSrcID = getPrevNode(wholePath, badDestID)
                 logging.info("Removing bad link " + str(badSrcID) + "->" + str(badDestID) +
                              " from route cache. ")
