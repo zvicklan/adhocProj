@@ -199,7 +199,7 @@ while not(testDone):
                     #The path broke! Send an update
                     badDestID = getNextNode(wholePath, myID)
                     removeLinkFromCache(path2Node, myID, badDestID)
-                    dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig):
+                    dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                     sendMsg(txdevice, dropMsg, rxdevice, logging)
                     lastMsgIDs[origID-1][3] = msgID
 
@@ -216,7 +216,7 @@ while not(testDone):
                 removeLinkFromCache(path2Node, badSrcID, badDestID)
 
                 #And forward the message
-                dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig):
+                dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                 sendMsg(txdevice, dropMsg, rxdevice, logging)
                 
     time.sleep(0.01)
