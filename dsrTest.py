@@ -201,16 +201,11 @@ while not(testDone):
                     removeLinkFromCache(path2Node, myID, badDestID)
                     dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                     sendMsg(txdevice, dropMsg, rxdevice, logging)
-                    print(origID)
-                    print(lastMsgIDs)
                     lastMsgIDs[origID-1][3] = msgID
 
         if msgType == ROUT_DROP: #Drop Message
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
             #Check we haven't seen it already
-            print(origID)
-            print(lastMsgIDs)
-            print(ROUT_DROP)
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
             
             if not isNew: #TODO this has serious wrap-around issues I think. Need to clear this somehow
