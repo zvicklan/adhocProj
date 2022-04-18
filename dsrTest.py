@@ -186,11 +186,11 @@ while not(testDone):
                 
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
                 #Mark this one done (using lastMsg)
+                sendAck(txdevice, rxMsg, rxdevice, logging) #Send the ACK
                 lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, DATA_MSG, origID, msgID)
                 if not isNew: #skip if this is a duplicate
                     continue
                 
-                sendAck(txdevice, rxMsg, rxdevice, logging) #Send the ACK
                 #Then I send it along!                
                 dataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
                 logging.info("Forwarding msg from node " + str(srcID))
@@ -201,11 +201,16 @@ while not(testDone):
                     removeLinkFromCache(path2Node, myID, badDestID)
                     dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                     sendMsg(txdevice, dropMsg, rxdevice, logging)
+                    print(origID)
+                    print(lstMsgIDs)
                     lastMsgIDs[origID-1][3] = msgID
 
         if msgType == ROUT_DROP: #Drop Message
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
             #Check we haven't seen it already
+            print(origID)
+            print(lstMsgIDs)
+            print(ROUT_DROP)
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
             
             if not isNew: #TODO this has serious wrap-around issues I think. Need to clear this somehow
