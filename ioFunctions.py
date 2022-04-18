@@ -113,7 +113,6 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
         logging.info("sendWithAck timed out")
         
     retVal = 1-timedOut #1 if we were successful, 0 else
-    print(retVal)
     return retVal
 
 def sendMsg(txdevice, msg, rxdevice, logging):

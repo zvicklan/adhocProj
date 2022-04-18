@@ -194,8 +194,10 @@ while not(testDone):
                 #Then I send it along!                
                 dataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
                 logging.info("Forwarding msg from node " + str(srcID))
-                
-                if not sendMsgWithAck(txdevice, dataMsg, rxdevice, logging): #auto RX blanking
+
+                ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging)
+                print(ackRcvd)
+                if not ackRcvd:
                     #The path broke! Send an update
                     badDestID = getNextNode(wholePath, myID)
                     logging.info("ACK Failed. Removing bad link " + str(badSrcID) + "->" + str(badDestID) +
