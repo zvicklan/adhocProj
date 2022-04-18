@@ -168,6 +168,8 @@ def readMsgRouteDisc(msg, logger='None'):
     #And return
     return origID, msgID, srcID, destID, hopCount, pathFromOrig
 
+
+
 def makeMsgRouteReply(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
     #Combines everything together into a message for sending
 
@@ -188,7 +190,6 @@ def readMsgRouteReply(msg, logger='None'):
     #And return
     return origID, msgID, srcID, destID, hopCount, pathFromOrig
 
-
 def makeMsgData(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
     #Combines everything together into a message for sending
 
@@ -208,3 +209,36 @@ def readMsgData(msg, logger='None'):
 
     #And return
     return origID, msgID, srcID, destID, hopCount, pathFromOrig
+
+def makeMsgRouteDrop(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
+    #Combines everything together into a message for sending
+
+    msgType = 4
+    pathFromOrig = [0]*3
+    #Use the helper function
+    msg = makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger)
+        
+    #And return the made msg
+    return msg
+
+def readMsgRouteDrop(msg, logger='None'):
+    #Outputs in order origID, msgID, srcID, destID
+    #Ignore the pathFromOrig
+    
+    #Get the bytes
+    (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsg(msg, logger)
+
+    #And return
+    return origID, msgID, srcID, destID, hopCount, pathFromOrig
+
+def checkLastMsg(lastMsgIDs, msgType, origID, msgID):
+    #Updates the last message, lets you know if this is new
+
+    lastMsgID = lastMsgIDs[origID-1][msgType-1]
+    if lastMsgID == msgID:
+        isNew = False
+    else:
+        isNew = True
+        lastMsgIDs[origID-1][msgType-1] = msgID
+
+    return lastMsgIDs, isNew

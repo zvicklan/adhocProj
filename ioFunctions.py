@@ -119,6 +119,8 @@ def sendMsg(txdevice, msg, rxdevice, logging):
     #Takes in the rfdevice and msg (as an int) and sends it out
     protocol = None #Default 1
     pulselength = None #Default 350
+    
+    logging.info("sendMsg: " + hex(msg))
 
     time.sleep(0.4)
     
@@ -128,7 +130,6 @@ def sendMsg(txdevice, msg, rxdevice, logging):
         
     #Flash on our antenna, send, turn it off
     txdevice.enable_tx()
-    logging.info("sendMsg: " + hex(msg))
     txdevice.tx_code(msg, protocol, pulselength)
     txdevice.disable_tx()
     
