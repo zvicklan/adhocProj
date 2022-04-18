@@ -198,7 +198,10 @@ while not(testDone):
                 if not sendMsgWithAck(txdevice, dataMsg, rxdevice, logging): #auto RX blanking
                     #The path broke! Send an update
                     badDestID = getNextNode(wholePath, myID)
+                    logging.info("ACK Failed. Removing bad link " + str(badSrcID) + "->" + str(badDestID) +
+                                 " from route cache. ")
                     removeLinkFromCache(path2Node, myID, badDestID)
+                    logging.info("Updated routing cache to " + str(path2Node))
                     dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                     sendMsg(txdevice, dropMsg, rxdevice, logging)
                     lastMsgIDs[origID-1][3] = msgID
