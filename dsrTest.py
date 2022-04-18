@@ -60,7 +60,7 @@ hops2Node = [0] * maxID # Will store the num hops
 path2Node = [0] * maxID # Will store the node
 
 #Create a struct for tracking the last msg we've seen from each node
-lastMsgIDs = [[0 for i in range(3)] for j in range(5)]
+lastMsgIDs = [[0 for i in range(numMsgTypes)] for j in range(maxID)]
 
 # Start listening:
 rxdevice.enable_rx()
