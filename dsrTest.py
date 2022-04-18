@@ -100,7 +100,7 @@ while not(testDone):
             wholePath = getWholePath(origID, pathFromOrig, destID)
 
             #Check if we've seen it - Need to allow for multiple paths coming in
-            lastMsgIDs, isNew = (lastMsgIDs, ROUT_DISC, origID, msgID)
+            lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DISC, origID, msgID)
             
             if origID == myID: #Ignore our own msgs (or replies to them)
                 continue
@@ -140,7 +140,7 @@ while not(testDone):
             
             if imNext:
                 #Mark this one done (using lastMsg)
-                lastMsgIDs, isNew = (lastMsgIDs, ROUT_REPL, origID, msgID)
+                lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_REPL, origID, msgID)
                 if not isNew:
                     continue #skip if we've seen this one before
                 
@@ -179,14 +179,14 @@ while not(testDone):
             #Only send if I'm the next stop in the route
             if destID == myID: #It's for me!
                 #Mark this one done (using lastMsg)
-                lastMsgIDs, isNew = (lastMsgIDs, DATA_MSG, origID, msgID)
+                lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, DATA_MSG, origID, msgID)
                 if isNew:
                     sendAck(txdevice, rxMsg, rxdevice, logging)
                     logging.info("Received data msg from node " + str(origID))
                 
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
                 #Mark this one done (using lastMsg)
-                lastMsgIDs, isNew = (lastMsgIDs, DATA_MSG, origID, msgID)
+                lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, DATA_MSG, origID, msgID)
                 if not isNew: #skip if this is a duplicate
                     continue
                 
@@ -206,7 +206,7 @@ while not(testDone):
         if msgType == ROUT_DROP: #Drop Message
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
             #Check we haven't seen it already
-            lastMsgIDs, isNew = (lastMsgIDs, ROUT_DROP, origID, msgID)
+            lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
             
             if not isNew: #TODO this has serious wrap-around issues I think. Need to clear this somehow
                 continue
