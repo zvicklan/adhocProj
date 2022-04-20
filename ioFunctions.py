@@ -75,7 +75,11 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging, logger="None"):
             #Check if it's one we want:
             if msgType_rx: #!= 0
                 toParse = deAckMsg(rxMsg) #returns rxMsg if rxMsg not an ACK
-                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(toParse, logger)
+                #Log if desired
+                if logger != 'None':
+                    logMsg(rxMsg, logger, 1) # 1 means "in"
+                    
+                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(toParse)
                 #Logic for Route Disc/Route Reply
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc

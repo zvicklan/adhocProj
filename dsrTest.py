@@ -104,8 +104,12 @@ while not(testDone):
         #We will do processing if this is a real message
         if msgType and isAckMsg(rxMsg): #It's a real msg and an ACK (I'm not in the right state, so skip)
             continue
+        #Log if desired
+        if logger != 'None':
+            logMsg(rxMsg, logger, 1) # 1 means "in"
+            
         if msgType == ROUT_DISC: #Route Discovery
-            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(rxMsg, logger)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(rxMsg)
             wholePath = getWholePath(origID, pathFromOrig, destID)
 
             #Check if we've seen it - Need to allow for multiple paths coming in
@@ -137,7 +141,7 @@ while not(testDone):
                     sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
             
         if msgType == ROUT_REPL: #Route Reply
-            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(rxMsg, logger)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(rxMsg)
             wholePath = getWholePath(origID, pathFromOrig, destID)
             
             #Capture the info as long as we're involved
@@ -185,7 +189,7 @@ while not(testDone):
                     sendMsgWithAck(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
 
         if msgType == DATA_MSG: #Data Message
-            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(rxMsg, logger)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(rxMsg)
             #Forward the message if your predecessor in the list sent
             wholePath = getWholePath(origID, pathFromOrig, destID)
 
@@ -227,7 +231,7 @@ while not(testDone):
                     lastMsgIDs[origID-1][3] = msgID
 
         if msgType == ROUT_DROP: #Drop Message
-            origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg, logger)
+            origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
             #Check we haven't seen it already
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
 
