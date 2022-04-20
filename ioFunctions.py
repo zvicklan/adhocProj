@@ -34,7 +34,7 @@ def txSetup():
     txdevice = RFDevice(argsTx.gpio)
     return txdevice
 
-def sendAck(txdevice, msg, rxdevice, logging):
+def sendAck(txdevice, msg, rxdevice, logging, logger="None"):
     #Creates the ACK msg and sends it
 
     #Ignore if this is alredy an ACK
@@ -42,9 +42,9 @@ def sendAck(txdevice, msg, rxdevice, logging):
         logging.info("sendAck ignoring " + hex(msg) + ". Already an ACK")
     else:
         ackMsg = createAckMsg(msg)
-        sendMsg(txdevice, ackMsg, rxdevice, logging)
+        sendMsg(txdevice, ackMsg, rxdevice, logging, logger)
     
-def sendMsgWithAck(txdevice, msg, rxdevice, logging):
+def sendMsgWithAck(txdevice, msg, rxdevice, logging, logger="None"):
     # Awaits an ACK msg with the following
     #   ACK bit set
     #   Same orig ID
@@ -75,7 +75,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
             #Check if it's one we want:
             if msgType_rx: #!= 0
                 toParse = deAckMsg(rxMsg) #returns rxMsg if rxMsg not an ACK
-                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(toParse)
+                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(toParse, logger)
                 #Logic for Route Disc/Route Reply
                 if msgType == 1 and msgType_rx == 2:
                     if origID == srcID: #Ensure this was my Route Disc
@@ -101,7 +101,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
                 txTimeDiff = currTime - lastTx
                 if txTimeDiff.total_seconds() > reTxInterval:
                     logging.info("TX Delay " + str(txTimeDiff.total_seconds()) + " Re-transmit")
-                    sendMsg(txdevice, msg, rxdevice, logging)
+                    sendMsg(txdevice, msg, rxdevice, logging, logger)
                     lastTx = datetime.now()
 
             #And wait a bit
@@ -115,13 +115,16 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging):
     retVal = 1-timedOut #1 if we were successful, 0 else
     return retVal
 
-def sendMsg(txdevice, msg, rxdevice, logging):
+def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     #Takes in the rfdevice and msg (as an int) and sends it out
     protocol = None #Default 1
     pulselength = None #Default 350
     
     logging.info("sendMsg: " + hex(msg))
-
+    #Log if desired
+    if logger != 'None':
+        logMsg(msg, logger, 0) # 0 for "out"
+        
     time.sleep(0.4)
     
     #Do some logic to avoid receiving our own signal

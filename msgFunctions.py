@@ -7,12 +7,20 @@ def getTimeStamp():
     timeStamp = 3600*now.hour + 60*now.minute + now.second + now.microsecond*1e-6
     return timeStamp
 
+def logMsg(msg, logger, msgInOut):
+    #Helper for logging
+    #msgInOut
+    # 0 means "out"
+    # 1 means "in"
+    byteList = msg2Bytes(msg)
+    logger.writerow([getTimeStamp()] + [msgInOut] + byteList)
+    
 #General helper function for going Byte String to Msg
 def bytes2Msg(byteList, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow([getTimeStamp()] + [0] + byteList) #0 means "out"
+        logMsg(msg, logger, 0) #0 means "out"
         
     msg = 0
     #Loop through the bytes to make a msg
@@ -85,7 +93,7 @@ def msg2Bytes(msg, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow([getTimeStamp()] + [1] + byteList) # 1 means "in"
+        logMsg(msg, logger, 1) # 1 means "in"
         
     #And output!
     return byteList 
