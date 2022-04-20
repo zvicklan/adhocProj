@@ -48,5 +48,5 @@ print(isAckMsg(d))
 
 #ioFunctions test
 print(getFileTimeStamp())
-print(getMsgTimeStamp())
+print(getTimeStamp())
 log.close()

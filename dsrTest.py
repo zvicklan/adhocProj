@@ -5,6 +5,7 @@ import signal
 import sys
 import time
 import logging
+import os
 
 from rpi_rf import RFDevice
 from msgFunctions import *
@@ -50,6 +51,13 @@ line = file.readlines()
 myID = int(line[0])
 logging.info("Received ID " + str(myID))
 
+#Make logging file
+logDir = '../log/'
+os.makedirs(logDir, exist_ok=True)
+timeStamp = getFileTimeStamp()
+log = open(logDir + 'log_' + str(myID) + '_' + timeStamp + '.csv', 'w', newline='')
+logger = csv.writer(log)
+
 #Setup node information and internal memory state
 maxID = 5 #b/c we know the # of nodes
 numMsgTypes = 4
@@ -71,7 +79,7 @@ if myID == 1: #We'll have the first guy kick this off
     destNode = msgDests[0]
 
     destNode = 5 #for testing
-    msg = makeMsgRouteDisc(myID, msgIDs[0], myID, destNode, [])
+    msg = makeMsgRouteDisc(myID, msgIDs[0], myID, destNode, [], logger)
     msgIDs[0] = (msgIDs[0] + 1) % 16
     sendMsg(txdevice, msg, rxdevice, logging) #auto RX blanking
 
@@ -96,7 +104,7 @@ while not(testDone):
         if msgType and isAckMsg(rxMsg): #It's a real msg and an ACK (I'm not in the right state, so skip)
             continue
         if msgType == ROUT_DISC: #Route Discovery
-            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(rxMsg)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(rxMsg, logger)
             wholePath = getWholePath(origID, pathFromOrig, destID)
 
             #Check if we've seen it - Need to allow for multiple paths coming in
@@ -114,7 +122,7 @@ while not(testDone):
                         path2Node, hops2Node = updateCache(path2Node, hops2Node, myID, wholePath)
                         logging.info("Got Route Disc for me. Updated routing cache to "
                                      + str(path2Node))
-                        msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
+                        msg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig, logger)
                         sendMsgWithAck(txdevice, msg, rxdevice, logging) #auto RX blanking
                         
                 else: # We want to forward along the route disc
@@ -123,12 +131,12 @@ while not(testDone):
                         continue #We don't want to create endless loops
                     
                     pathFromOrig.append(myID) #add myself in the first available 0 spot
-                    msg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig)
+                    msg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig, logger)
                     logging.info("Not for me. Forwarding along")
                     sendMsg(txdevice, msg, rxdevice, logging) #auto RX blanking
             
         if msgType == ROUT_REPL: #Route Reply
-            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(rxMsg)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(rxMsg, logger)
             wholePath = getWholePath(origID, pathFromOrig, destID)
             
             #Capture the info as long as we're involved
@@ -156,7 +164,7 @@ while not(testDone):
                 if origID == myID: # We got a response!
                     #Send a data msg!
                     path = path2Node[destID-1]
-                    dataMsg = makeMsgData(origID, msgID, myID, destID, path[1:-1])
+                    dataMsg = makeMsgData(origID, msgID, myID, destID, path[1:-1], logger)
                     ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging)
                     if not ackRcvd:
                         #The path broke! Send an update
@@ -165,18 +173,18 @@ while not(testDone):
                                      " from route cache. ")
                         removeLinkFromCache(path2Node, myID, badDestID)
                         logging.info("Updated routing cache to " + str(path2Node))
-                        dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
+                        dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig, logger)
                         sendMsg(txdevice, dropMsg, rxdevice, logging)
                         lastMsgIDs[origID-1][3] = msgID
                     
                 else: # Check if it's our turn to send this msg (comes from the previous person)
                     # Then forward it along!
-                    msg = makeMsgRouteReply(origID, msgIDs[1], myID, destID, pathFromOrig)
+                    msg = makeMsgRouteReply(origID, msgIDs[1], myID, destID, pathFromOrig, logger)
                     msgIDs[1] = (msgIDs[1] + 1) % 16
                     sendMsgWithAck(txdevice, msg, rxdevice, logging) #auto RX blanking
 
         if msgType == DATA_MSG: #Data Message
-            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(rxMsg)
+            (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(rxMsg, logger)
             #Forward the message if your predecessor in the list sent
             wholePath = getWholePath(origID, pathFromOrig, destID)
 
@@ -202,7 +210,7 @@ while not(testDone):
                     continue
                 
                 #Then I send it along!                
-                dataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig) #update the sourceID
+                dataMsg = makeMsgData(origID, msgID, myID, destID, pathFromOrig, logger) #update the sourceID
                 logging.info("Forwarding msg from node " + str(srcID))
 
                 ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging)
@@ -213,12 +221,12 @@ while not(testDone):
                                  " from route cache. ")
                     removeLinkFromCache(path2Node, myID, badDestID)
                     logging.info("Updated routing cache to " + str(path2Node))
-                    dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
+                    dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig, logger)
                     sendMsg(txdevice, dropMsg, rxdevice, logging)
                     lastMsgIDs[origID-1][3] = msgID
 
         if msgType == ROUT_DROP: #Drop Message
-            origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
+            origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg, logger)
             #Check we haven't seen it already
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
 
@@ -234,7 +242,7 @@ while not(testDone):
                 logging.info("Updated routing cache to " + str(path2Node))
 
                 #And forward the message
-                dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
+                dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig, logger)
                 sendMsg(txdevice, dropMsg, rxdevice, logging)
                 
     time.sleep(0.01)

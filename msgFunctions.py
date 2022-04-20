@@ -12,7 +12,7 @@ def bytes2Msg(byteList, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow([getTimeStamp()] + byteList)
+        logger.writerow([getTimeStamp()] + [0] + byteList) #0 means "out"
         
     msg = 0
     #Loop through the bytes to make a msg
@@ -85,7 +85,7 @@ def msg2Bytes(msg, logger='None'):
     
     #Log if desired
     if logger != 'None':
-        logger.writerow([getTimeStamp()] + byteList)
+        logger.writerow([getTimeStamp()] + [1] + byteList) # 1 means "in"
         
     #And output!
     return byteList 
