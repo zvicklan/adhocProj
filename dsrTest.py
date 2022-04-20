@@ -207,7 +207,7 @@ while not(testDone):
                 #Mark this one done (using lastMsg)
                 lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, DATA_MSG, origID, msgID)
                 if isNew:
-                    sendAck(txdevice, rxMsg, rxdevice, logging)
+                    sendAck(txdevice, rxMsg, rxdevice, logging, logger)
                     logging.info("Received data msg from node " + str(origID))
                 
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:

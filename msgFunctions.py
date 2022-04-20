@@ -13,8 +13,6 @@ def logMsg(msg, logger, msgInOut):
     # 0 means "out"
     # 1 means "in"
     byteList = msg2Bytes(msg)
-    print(msg)
-    print(byteList)
     logger.writerow([getTimeStamp()] + [msgInOut] + byteList)
     
 #General helper function for going Byte String to Msg
