@@ -102,6 +102,9 @@ while not(testDone):
                      ", msgType " + str(msgType) + "]")
         
         #We will do processing if this is a real message
+        if not msgType: #ignore msgs not part of the system
+            continue
+        
         if msgType and isAckMsg(rxMsg): #It's a real msg and an ACK (I'm not in the right state, so skip)
             continue
         #Log if desired
