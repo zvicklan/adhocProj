@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
 #For naming log file
 #parser = argparse.ArgumentParser(description='Ad Hoc Routing via DSR')
 #parser.add_argument('-n', dest='runname', type=str, default="None",
-                    help="Name for run log")
+#                    help="Name for run log")
 #args = parser.parse_args()
 
 faulthandler.enable()
