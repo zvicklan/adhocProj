@@ -67,6 +67,7 @@ logger = csv.writer(log)
 maxID = 5 #b/c we know the # of nodes
 numMsgTypes = 4
 numDests = 10
+forceRouting = 1
 
 msgIDs = [1] * numMsgTypes
 hops2Node = [0] * maxID # Will store the num hops
@@ -117,6 +118,8 @@ while not(testDone):
             
         if msgType == ROUT_DISC: #Route Discovery
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(rxMsg)
+            if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
+                continue
             wholePath = getWholePath(origID, pathFromOrig, destID)
 
             #Check if we've seen it - Need to allow for multiple paths coming in
@@ -149,6 +152,8 @@ while not(testDone):
             
         if msgType == ROUT_REPL: #Route Reply
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(rxMsg)
+            if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
+                continue
             wholePath = getWholePath(origID, pathFromOrig, destID)
             
             #Capture the info as long as we're involved
@@ -176,7 +181,9 @@ while not(testDone):
                 if origID == myID: # We got a response!
                     #Send a data msg!
                     path = path2Node[destID-1]
+                    msgID = msgIDs[2]
                     dataMsg = makeMsgData(origID, msgID, myID, destID, path[1:-1])
+                    msgIDs[2] = (msgIDs[2] + 1) % 16
                     ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging, logger)
                     if not ackRcvd:
                         #The path broke! Send an update
@@ -197,6 +204,8 @@ while not(testDone):
 
         if msgType == DATA_MSG: #Data Message
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(rxMsg)
+            if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
+                continue
             #Forward the message if your predecessor in the list sent
             wholePath = getWholePath(origID, pathFromOrig, destID)
 
@@ -248,6 +257,8 @@ while not(testDone):
 
         if msgType == ROUT_DROP: #Drop Message
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
+            if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
+                continue
             #Check we haven't seen it already
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
 
