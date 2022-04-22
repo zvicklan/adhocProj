@@ -222,7 +222,6 @@ def makeMsgRouteDrop(origID, msgID, srcID, destID, pathFromOrig, logger='None'):
     #Combines everything together into a message for sending
 
     msgType = 4
-    pathFromOrig = [0]*3
     #Use the helper function
     msg = makeMsg(msgType, origID, msgID, srcID, destID, pathFromOrig, logger)
         
