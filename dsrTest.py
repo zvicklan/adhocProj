@@ -195,6 +195,10 @@ while not(testDone):
                         dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                         sendMsg(txdevice, dropMsg, rxdevice, logging, logger)
                         lastMsgIDs[origID-1][3] = msgID
+                        if myID == origID and (myID == 5 or myID == 1): #Send a new route disc
+                            msg = makeMsgRouteDisc(myID, msgIDs[0], myID, 6-myID, []) #send to opposite side
+                            msgIDs[0] = (msgIDs[0] + 1) % 16
+                            sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
                     
                 else: # Check if it's our turn to send this msg (comes from the previous person)
                     # Then forward it along!
@@ -276,6 +280,11 @@ while not(testDone):
                 #And forward the message
                 dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
                 sendMsg(txdevice, dropMsg, rxdevice, logging, logger)
+
+                if myID == origID and (myID == 5 or myID == 1): #Send a new route disc
+                    msg = makeMsgRouteDisc(myID, msgIDs[0], myID, 6-myID, []) #send to opposite side
+                    msgIDs[0] = (msgIDs[0] + 1) % 16
+                    sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
                 
     time.sleep(0.01)
     
