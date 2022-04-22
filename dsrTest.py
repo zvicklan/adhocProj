@@ -207,12 +207,21 @@ while not(testDone):
             
             senderInd = wholePath.index(srcID) #Who this came from
             #Only send if I'm the next stop in the route
+            #If i'm next, acknowledge no matter what:
+            if wholePath[senderInd + 1] == myID:
+                sendAck(txdevice, rxMsg, rxdevice, logging, logger)
+                
             if destID == myID and wholePath[senderInd + 1] == myID: #It's for me!
                 #Mark this one done (using lastMsg)
                 lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, DATA_MSG, origID, msgID)
                 if isNew:
-                    sendAck(txdevice, rxMsg, rxdevice, logging, logger)
                     logging.info("Received data msg from node " + str(origID))
+                    #Send a data msg back!
+                    path = path2Node[origID-1]
+                    msgID = msgIDs[2]
+                    msgIDs[2] = (msgIDs[2] + 1) % 16
+                    dataMsg = makeMsgData(myID, msgID, myID, srcID, path[1:-1])
+                    ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging, logger)
                 
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
                 #Mark this one done (using lastMsg)
