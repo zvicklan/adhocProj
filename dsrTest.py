@@ -29,6 +29,11 @@ def exithandler(signal, frame):
 logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
                     format='%(asctime)-15s.%(msecs)03d - [%(levelname)s] %(module)s: %(message)s', )
 
+#For naming log file
+parser = argparse.ArgumentParser(description='Ad Hoc Routing via DSR')
+parser.add_argument('-n', dest='runname', type=str, default="None",
+                    help="Name for run log")
+args = parser.parse_args()
 
 faulthandler.enable()
 
@@ -55,8 +60,9 @@ logging.info("Received ID " + str(myID))
 #Make logging file
 logDir = '../log/'
 os.makedirs(logDir, exist_ok=True)
-timeStamp = getFileTimeStamp()
-log = open(logDir + 'log_' + str(myID) + '_' + timeStamp + '.csv', 'w', newline='')
+if runname == "None":
+    runname = getFileTimeStamp() #If no input, use a timestamp
+log = open(logDir + 'log_' + str(myID) + '_' + runname + '.csv', 'w', newline='')
 logger = csv.writer(log)
 
 #Setup node information and internal memory state
