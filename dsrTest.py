@@ -220,7 +220,7 @@ while not(testDone):
                     path = path2Node[origID-1]
                     msgID = msgIDs[2]
                     msgIDs[2] = (msgIDs[2] + 1) % 16
-                    dataMsg = makeMsgData(myID, msgID, myID, srcID, path[1:-1])
+                    dataMsg = makeMsgData(myID, msgID, myID, origID, path[1:-1])
                     ackRcvd = sendMsgWithAck(txdevice, dataMsg, rxdevice, logging, logger)
                 
             elif senderInd < len(wholePath) - 1 and wholePath[senderInd + 1] == myID:
