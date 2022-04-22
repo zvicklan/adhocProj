@@ -59,7 +59,7 @@ logging.info("Received ID " + str(myID))
 #Make logging file
 logDir = '../log/'
 os.makedirs(logDir, exist_ok=True)
-filename = sys.argv[1] #getFileTimeStamp() #If no input, use a timestamp
+#filename = sys.argv[1] #getFileTimeStamp() #If no input, use a timestamp
 log = open(logDir + 'log_' + str(myID) + '_' + filename + '.csv', 'w', newline='')
 logger = csv.writer(log)
 
