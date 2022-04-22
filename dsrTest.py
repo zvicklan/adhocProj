@@ -234,7 +234,7 @@ while not(testDone):
                     removeLinkFromCache(path2Node, myID, badDestID)
                     logging.info("Updated routing cache to " + str(path2Node))
                     dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
-                    sendMsg(txdevice, dropMsg, rxdevice, logging, logger, logger)
+                    sendMsg(txdevice, dropMsg, rxdevice, logging, logger)
                     lastMsgIDs[origID-1][3] = msgID
 
         if msgType == ROUT_DROP: #Drop Message
