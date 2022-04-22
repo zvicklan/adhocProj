@@ -207,7 +207,7 @@ while not(testDone):
             
             senderInd = wholePath.index(srcID) #Who this came from
             #Only send if I'm the next stop in the route
-            if destID == myID: #It's for me!
+            if destID == myID and wholePath[senderInd + 1] == myID: #It's for me!
                 #Mark this one done (using lastMsg)
                 lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, DATA_MSG, origID, msgID)
                 if isNew:
