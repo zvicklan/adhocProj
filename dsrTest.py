@@ -50,18 +50,22 @@ ROUT_REPL = 2
 DATA_MSG = 3
 ROUT_DROP = 4
 
-#Set up my info
-file = open('idNum.txt', 'r')
-line = file.readlines()
-myID = int(line[0])
-logging.info("Received ID " + str(myID))
-
 #Make logging file
 logDir = '../log/'
 os.makedirs(logDir, exist_ok=True)
 filename = getFileTimeStamp() #If no input, use a timestamp
 log = open(logDir + 'log_' + str(myID) + '_' + filename + '.csv', 'w', newline='')
 logger = csv.writer(log)
+
+#Set up my info
+file = open('idNum.txt', 'r')
+line = file.readlines()
+myID = int(line[0])
+
+file = logging.FileHandler("stdLog_" + str(myID) + '_' + timeStamp + '.csv')
+logging.addHandler(file)
+
+logging.info("Received ID " + str(myID))
 
 #Setup node information and internal memory state
 maxID = 5 #b/c we know the # of nodes
@@ -261,8 +265,7 @@ while not(testDone):
 
         if msgType == ROUT_DROP: #Drop Message
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
-            if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
-                continue
+
             #Check we haven't seen it already
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
 
