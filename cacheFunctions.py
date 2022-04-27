@@ -8,7 +8,7 @@ def remove0s(path):
 
     return newPath
 
-def updateCache(cache, hops2Node, myNode, wholePath):
+def updateCache(cache, hops2Node, myNode, wholePath, logging="None"):
 
     myInd = wholePath.index(myNode)
 
@@ -27,7 +27,11 @@ def updateCache(cache, hops2Node, myNode, wholePath):
                 subPath = wholePath[myInd : ii + 1]
         cache[node-1] = subPath
         hops2Node[node-1] = len(subPath)
-    
+
+    # Print for fun
+    if logging != "None"
+        logging.info("Updated routing cache to " + str(path2Node))
+        
     return cache, hops2Node
    
 def genDests(numDests, myID):
@@ -73,7 +77,7 @@ def getNextNode(wholePath, srcID):
 
     return destID
 
-def removeLinkFromCache(cache, badSrcID, badDestID):
+def removeLinkFromCache(cache, badSrcID, badDestID, logging="None"):
     #Remove all routes that contain the bad link
 
     cacheSize = len(cache)
@@ -87,4 +91,9 @@ def removeLinkFromCache(cache, badSrcID, badDestID):
             if srcInd == destInd - 1 or srcInd == destInd + 1:
                 #it's using the link (or its reverse (not likely))
                 cache[ind] = 0 #so remove it
+
+    if logging != "None"
+        logging.info("Removing bad link " + str(badSrcID) + "->" + str(badDestID) +
+                     " from route cache. ")
+        logging.info("Updated routing cache to " + str(path2Node))
     return cache

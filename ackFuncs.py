@@ -88,7 +88,7 @@ def isAwaitedAck(ackList, msg):
     #Returns 1 if this is something I've been waiting for
     for thisAck in ackList:
         if isMyAck(thisAck[0], msg):
-            return 1
+            return thisAck[0]
     #else
     return 0
 
@@ -110,7 +110,7 @@ def isMyAck(txMsg, rxMsg):
     if msgType == 1 and msgType_rx == 2:
         if origID == srcID: #Ensure this was my Route Disc
             if (origID_rx, msgID_rx) == (origID, msgID): #same msg
-                imNext = nextInPath2(origID, destID, pathFromOrig, origID, srcID_rx)
+                imNext = nextInPath(origID, destID, pathFromOrig, origID, srcID_rx)
                 if imNext:
                     #It's the same msg! We got it!
                     itsMyAck = 1
@@ -121,16 +121,19 @@ def isMyAck(txMsg, rxMsg):
     #And return
     return itsMyAck
 
-def nextInPath2(origID, destID, pathFromOrig, node1, node2):
+def nextInPath(origID, destID, pathFromOrig, node1, node2):
     #Builds the complete path, then checks if I'm next
     wholePath = pathFromOrig.copy()
     wholePath.insert(0, origID)
     wholePath.append(destID) # Now this is the whole path   
 
     # We should be right before the sender
-    node1Ind = wholePath.index(node1)
-    node2Ind  = wholePath.index(node2)
+    if node1 not in wholePath or node2 not in wholePath:
+        imNext = 0
+    else: #they're at least in the path
+        node1Ind = wholePath.index(node1)
+        node2Ind = wholePath.index(node2)
 
-    imNext = node2Ind == (node1Ind + 1)
+        imNext = node2Ind == (node1Ind + 1)
 
     return imNext
