@@ -62,6 +62,7 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging, logger="None"):
     #Send the first time, then start listening
     logging.info("sendWithAck sending: " + hex(msg))
     sendMsg(txdevice, msg, rxdevice, logging, logger)
+    numTx = 1
     msgType = getMsgType(msg)
     startTime = datetime.now()
     lastTx = startTime
@@ -97,15 +98,17 @@ def sendMsgWithAck(txdevice, msg, rxdevice, logging, logger="None"):
         if awaitingACK: #Just so we skip this when we find the msg
             currTime = datetime.now()
             timeDiff = currTime - startTime
-            #If it's been long enough, time out
-            if timeDiff.total_seconds() > maxWait:
-                logging.info("Delay " + str(timeDiff.total_seconds()) + " Time Out")
-                timedOut = 1
-            else:
-                txTimeDiff = currTime - lastTx
-                if txTimeDiff.total_seconds() > reTxInterval:
-                    logging.info("TX Delay " + str(txTimeDiff.total_seconds()) + " Re-transmit")
+            txTimeDiff = currTime - lastTx
+            #See if it's time to retransmit
+            if txTimeDiff.total_seconds() > reTxInterval:
+                #but if it's been too many retries, time out
+                if numTx >= maxWait:
+                    logging.info("Delay " + str(timeDiff.total_seconds()) + " Time Out")
+                    timedOut = 1
+                else
+                    logging.info("TX Delay " + str(txTimeDiff.total_seconds()) + " Transmit " + str(numTx))
                     sendMsg(txdevice, msg, rxdevice, logging, logger)
+                    numTx = numTx + 1
                     lastTx = datetime.now()
 
             #And wait a bit
