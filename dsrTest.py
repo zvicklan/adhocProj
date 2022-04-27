@@ -83,6 +83,11 @@ lastMsgIDs = [[0 for i in range(numMsgTypes)] for j in range(maxID)]
 # Start listening:
 rxdevice.enable_rx()
 
+#Create acknowledgement structure (msg, lastTime, count)
+maxTxCount = 3
+ackList = []
+reTxInterval = 1 #sec
+
 if myID == 1: #We'll have the first guy kick this off
     msgDests = genDests(numDests, myID)
     #Send a Route Discovery msg (just as a test)
