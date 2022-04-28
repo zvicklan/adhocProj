@@ -283,7 +283,7 @@ while not(testDone):
                         #Send a data msg back!
                         path = path2Node[origID-1]
                         logging.info("Cache to reply is " + str(path))
-                        if len(path > 2): #there's no path
+                        if len(path) > 2: #there's no path
                             msgID = msgIDs[2]
                             msgIDs[2] = (msgIDs[2] + 1) % 16
                             dataMsg = makeMsgData(myID, msgID, myID, origID, path[1:-1])
