@@ -84,7 +84,6 @@ lastMsgIDs = [[0 for i in range(numMsgTypes)] for j in range(maxID)]
 
 # Start listening:
 rxdevice.enable_rx()
-txdevice.enable_tx()
 
 #Create acknowledgement structure (msg, lastTime, count)
 ackList = []
@@ -330,7 +329,6 @@ while not(testDone):
     
 #Stop receive
 rxdevice.disable_rx()
-txdevice.disable_tx()
 
 #Clean up before exiting
 rxdevice.cleanup()

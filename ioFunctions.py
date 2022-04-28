@@ -56,16 +56,18 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     if logger != 'None':
         logMsg(msg, logger, 0) # 0 for "out"
         
+    time.sleep(0.4)
+    
     #Do some logic to avoid receiving our own signal
     if rxdevice != "None":
         rxdevice.disable_rx()
         
     #Flash on our antenna, send, turn it off
     txdevice.enable_tx()
-    time.sleep(0.1)    
     txdevice.tx_code(msg, protocol, pulselength, txLength)
-    time.sleep(0.1)    
     txdevice.disable_tx()
+
+    time.sleep(0.1)    
 
     #And turn rx back on (if provided)
     if rxdevice != "None":
