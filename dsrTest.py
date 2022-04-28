@@ -120,7 +120,7 @@ while not(testDone):
             ackList = removeAck(ackList, reTxMsg)
 
             #Get the node that didn't respond to us
-            origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(reTxMsg)
+            origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(reTxMsg)            
             wholePath = getWholePath(origID, pathFromOrig, destID)
             badDestID = getNextNode(wholePath, myID)
 
@@ -171,6 +171,9 @@ while not(testDone):
         ##########################
         if msgType == ROUT_DISC: #Route Discovery
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteDisc(rxMsg)
+            if max([origID, msgID, srcID, destID, max(pathFromOrig)]) > 5: #Check for bad msgs
+                continue;
+
             if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
                 continue
             wholePath = getWholePath(origID, pathFromOrig, destID)
@@ -210,6 +213,9 @@ while not(testDone):
         ##########################
         if msgType == ROUT_REPL: #Route Reply
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgRouteReply(rxMsg)
+            if max([origID, msgID, srcID, destID, max(pathFromOrig)]) > 5: #Check for bad msgs
+                continue;
+
             if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
                 continue
             wholePath = getWholePath(origID, pathFromOrig, destID)
@@ -249,6 +255,9 @@ while not(testDone):
         #########################
         if msgType == DATA_MSG: #Data Message
             (origID, msgID, srcID, destID, hopCount, pathFromOrig) = readMsgData(rxMsg)
+            if max([origID, msgID, srcID, destID, max(pathFromOrig)]) > 5: #Check for bad msgs
+                continue;
+
             if forceRouting and not (srcID == myID + 1 or srcID == myID - 1): #Force routing
                 continue
             #Forward the message if your predecessor in the list sent
@@ -292,6 +301,8 @@ while not(testDone):
         ##########################
         if msgType == ROUT_DROP: #Drop Message
             origID, msgID, srcID, badDestID, hopCount, pathFromOrig = readMsgRouteDrop(rxMsg)
+            if max([origID, msgID, srcID, destID, max(pathFromOrig)]) > 5: #Check for bad msgs
+                continue;
 
             #Check we haven't seen it already
             lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
