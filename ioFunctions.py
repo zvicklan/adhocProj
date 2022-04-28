@@ -61,6 +61,7 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
         
     #Flash on our antenna, send, turn it off
     b = msg
+    time.sleep(0.1)
     txdevice.tx_code(b, 1, 350)
 
     #And turn rx back on (if provided)

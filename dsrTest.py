@@ -143,7 +143,7 @@ while not(testDone):
             ackList = updateAckList(ackList, reTxMsg)
 
     # Now see if we have a new msg
-    if rxdevice.rx_code_timestamp != timestamp:
+    while rxdevice.rx_code_timestamp != timestamp:
         (timestamp, rxMsg, msgType) = loadNewMsg(rxdevice, timestamp, logging)
         logging.info(hex(rxMsg) +
                      " [pulselength " + str(rxdevice.rx_pulselength) +
