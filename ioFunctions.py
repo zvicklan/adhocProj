@@ -55,7 +55,7 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     if logger != 'None':
         logMsg(msg, logger, 0) # 0 for "out"
         
-    time.sleep(0.6)
+    time.sleep(0.5)
     
     #Do some logic to avoid receiving our own signal
     if rxdevice != "None":
@@ -66,6 +66,7 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     txdevice.tx_code(msg, protocol, pulselength)
     txdevice.disable_tx()
 
+    time.sleep(0.1)
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
