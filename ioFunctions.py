@@ -54,8 +54,6 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     #Log if desired
     if logger != 'None':
         logMsg(msg, logger, 0) # 0 for "out"
-        
-    time.sleep(0.6)
     
     #Do some logic to avoid receiving our own signal
     if rxdevice != "None":
