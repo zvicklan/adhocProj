@@ -121,7 +121,8 @@ while not(testDone):
             wholePath = getWholePath(origID, pathFromOrig, destID)
             badDestID = getNextNode(wholePath, myID)
 
-            # Fix the cache and send out a drop            
+            # Fix the cache and send out a drop
+            badSrcID = myID #because this just happened
             removeLinkFromCache(path2Node, badSrcID, badDestID, logging)
             dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
             sendMsg(txdevice, dropMsg, rxdevice, logging, logger)
@@ -154,11 +155,14 @@ while not(testDone):
             #If so, mark it as done
             logging.info("Received ACK msg " + hex(rxMsg) + " for awaiting " + hex(ackedMsg))
             ackList = removeAck(ackList, ackedMsg)
-            
+
         #Log if desired
         if logger != 'None':
             logMsg(rxMsg, logger, 1) # 1 means "in"
 
+        #If it's an ACK, don't process. If it isn't for us, ignore
+        if isAckMsg(rxMsg):
+            continue
 
         ##########################
         if msgType == ROUT_DISC: #Route Discovery
