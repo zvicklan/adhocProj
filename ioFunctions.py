@@ -55,6 +55,7 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     if logger != 'None':
         logMsg(msg, logger, 0) # 0 for "out"
         
+    txdevice.enable_tx() #Try spreading out the enables to prevent seg faults
     time.sleep(0.5)
     
     #Do some logic to avoid receiving our own signal
@@ -62,11 +63,10 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
         rxdevice.disable_rx()
         
     #Flash on our antenna, send, turn it off
-    txdevice.enable_tx()
     txdevice.tx_code(msg, protocol, pulselength)
-    txdevice.disable_tx()
 
     time.sleep(0.1)
+    txdevice.disable_tx()
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
