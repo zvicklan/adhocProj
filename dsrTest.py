@@ -100,7 +100,6 @@ if myID == 1: #We'll have the first guy kick this off
     newRDmsg = makeMsgRouteDisc(myID, msgIDs[0], myID, destNode, [])
     msgIDs[0] = (msgIDs[0] + 1) % 16
     sendMsg(txdevice, newRDmsg, rxdevice, logging, logger) #auto RX blanking
-    sendMsg(txdevice, newRDmsg, rxdevice, logging, logger) #auto RX blanking
 
 timestamp = None
 logging.info("Listening for codes on GPIO")
