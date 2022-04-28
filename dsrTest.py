@@ -192,7 +192,7 @@ while not(testDone):
                         #Make and send a new msg
                         replyMsg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
                         sendMsg(txdevice, replyMsg, rxdevice, logging, logger) #auto RX blanking
-                        ackList = addAck(ackList, replyMsg, reTxInterval, maxTxCount)
+                        ackList = addAck(ackList, replyMsg, reTxInterval, maxTxCount, logging)
                         
                 else: # We want to forward along the route disc
                     # Check that we aren't on the path already, then send it!
@@ -202,8 +202,8 @@ while not(testDone):
                     #add myself to list and forward along
                     logging.info("Not for me. Forwarding along")
                     pathFromOrig.append(myID) 
-                    msg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig)
-                    sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
+                    newRDmsg = makeMsgRouteDisc(origID, msgID, myID, destID, pathFromOrig)
+                    sendMsg(txdevice, newRDmsg, rxdevice, logging, logger) #auto RX blanking
 
         ##########################
         if msgType == ROUT_REPL: #Route Reply
@@ -237,12 +237,12 @@ while not(testDone):
                 dataMsg = makeMsgData(origID, msgIDs[2], myID, destID, path[1:-1])
                 msgIDs[2] = (msgIDs[2] + 1) % 16
                 sendMsg(txdevice, dataMsg, rxdevice, logging, logger)
-                ackList = addAck(ackList, dataMsg, reTxInterval, maxTxCount)
+                ackList = addAck(ackList, dataMsg, reTxInterval, maxTxCount, logging)
                 
             else: # Otherwise, forward it along!
                 replyMsg = makeMsgRouteReply(origID, msgID, myID, destID, pathFromOrig)
                 sendMsg(txdevice, replyMsg, rxdevice, logging, logger) #auto RX blanking
-                ackList = addAck(ackList, replyMsg, reTxInterval, maxTxCount)
+                ackList = addAck(ackList, replyMsg, reTxInterval, maxTxCount, logging)
 
         #########################
         if msgType == DATA_MSG: #Data Message
@@ -285,7 +285,7 @@ while not(testDone):
                     
                 # Share the sending code - shorter
                 sendMsg(txdevice, dataMsg, rxdevice, logging, logger)
-                ackList = addAck(ackList, dataMsg, reTxInterval, maxTxCount) #Add to ACK list
+                ackList = addAck(ackList, dataMsg, reTxInterval, maxTxCount, logging) #Add to ACK list
 
         ##########################
         if msgType == ROUT_DROP: #Drop Message
@@ -307,9 +307,9 @@ while not(testDone):
                 sendMsg(txdevice, dropMsg, rxdevice, logging, logger)
 
                 if myID == origID and (myID == 5 or myID == 1): #Send a new route disc
-                    msg = makeMsgRouteDisc(myID, msgIDs[0], myID, 6-myID, []) #send to opposite side
+                    newRDmsg = makeMsgRouteDisc(myID, msgIDs[0], myID, 6-myID, []) #send to opposite side
                     msgIDs[0] = (msgIDs[0] + 1) % 16
-                    sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
+                    sendMsg(txdevice, newRDmsg, rxdevice, logging, logger) #auto RX blanking
 
     # Do a token wait between loops to avoid using all the power
     time.sleep(0.01)

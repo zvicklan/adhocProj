@@ -69,8 +69,11 @@ def updateAckList(ackList, msg):
     # Not necessary to return, but much easier to read
     return ackList
 
-def addAck(ackList, msg, reTxInterval, maxTxCount):
+def addAck(ackList, msg, reTxInterval, maxTxCount, logging="None"):
     #Adds a new acknowledgement
+    if logging != "None":
+        logging.info("AddAck: msg is " + hex(msg))
+        
     if len(ackList) == 0:
         ackList = [[msg, datetime.now(), 1, reTxInterval, maxTxCount]]
     else:
