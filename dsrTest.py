@@ -96,9 +96,9 @@ if myID == 1: #We'll have the first guy kick this off
     destNode = msgDests[0]
 
     destNode = 5 #for testing
-    msg = makeMsgRouteDisc(myID, msgIDs[0], myID, destNode, [])
+    newRDmsg = makeMsgRouteDisc(myID, msgIDs[0], myID, destNode, [])
     msgIDs[0] = (msgIDs[0] + 1) % 16
-    sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
+    sendMsg(txdevice, newRDmsg, rxdevice, logging, logger) #auto RX blanking
 
 timestamp = None
 logging.info("Listening for codes on GPIO")
@@ -116,7 +116,7 @@ while not(testDone):
     if reTxMsg:
         #If it's too far gone, we need to mark it out and drop it
         if isDead(ackList, reTxMsg):
-            logging.info("No response for " + hex(msg) + ". Link Dead")
+            logging.info("No response for " + hex(reTxMsg) + ". Link Dead")
             #Get the node that didn't respond to us
             origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(reTxMsg)
             wholePath = getWholePath(origID, pathFromOrig, destID)
@@ -135,7 +135,7 @@ while not(testDone):
                 sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
         else:
             #Re-send it
-            logging.info("No ACK for " + hex(msg) + ". Resending")
+            logging.info("No ACK for " + hex(reTxMsg) + ". Resending")
             sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
             ackList = updateAckList(ackList, reTxMsg)
 
