@@ -31,9 +31,9 @@ logging.basicConfig(level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S',
                     format='%(asctime)-15s.%(msecs)03d - [%(levelname)s] %(module)s: %(message)s', )
 
 #For naming log file
-#parser = argparse.ArgumentParser(description='Ad Hoc Routing via DSR')
-#parser.add_argument('filename', nargs ='+', action = 'store')
-#args = parser.parse_args()
+parser = argparse.ArgumentParser(description='Ad Hoc Routing via DSR')
+parser.add_argument('filename', nargs ='+', action = 'store')
+args = parser.parse_args()
 
 faulthandler.enable()
 
@@ -54,7 +54,7 @@ ROUT_DROP = 4
 #Make logging file
 logDir = '../log/'
 os.makedirs(logDir, exist_ok=True)
-filename = sys.argv[1] # getFileTimeStamp() #If no input, use a timestamp
+filename = args.filename #sys.argv[1] # getFileTimeStamp() #If no input, use a timestamp
 log = open(logDir + 'log_' + str(myID) + '_' + filename + '.csv', 'w', newline='')
 logger = csv.writer(log)
 
