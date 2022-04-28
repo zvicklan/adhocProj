@@ -29,7 +29,7 @@ def updateCache(cache, hops2Node, myNode, wholePath, logging="None"):
         hops2Node[node-1] = len(subPath)
 
     # Print for fun
-    if logging != "None"
+    if logging != "None":
         logging.info("Updated routing cache to " + str(path2Node))
         
     return cache, hops2Node
@@ -92,7 +92,7 @@ def removeLinkFromCache(cache, badSrcID, badDestID, logging="None"):
                 #it's using the link (or its reverse (not likely))
                 cache[ind] = 0 #so remove it
 
-    if logging != "None"
+    if logging != "None":
         logging.info("Removing bad link " + str(badSrcID) + "->" + str(badDestID) +
                      " from route cache. ")
         logging.info("Updated routing cache to " + str(path2Node))
