@@ -64,7 +64,7 @@ log = open(logDir + 'log_' + str(myID) + '_' + filename + '.csv', 'w', newline='
 logger = csv.writer(log)
 
 # And logging for the screen
-file = logging.FileHandler("stdLog_" + str(myID) + '_' + timeStamp + '.csv')
+file = logging.FileHandler("stdLog_" + str(myID) + '_' + filename + '.csv')
 logging.addHandler(file)
 
 logging.info("Received ID " + str(myID))
