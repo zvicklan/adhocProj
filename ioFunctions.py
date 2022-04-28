@@ -60,11 +60,7 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
         rxdevice.disable_rx()
         
     #Flash on our antenna, send, turn it off
-    txdevice.enable_tx()
-    time.sleep(0.01)    
     txdevice.tx_code(msg, protocol, pulselength)
-    time.sleep(0.01)    
-    txdevice.disable_tx()
 
     #And turn rx back on (if provided)
     if rxdevice != "None":
