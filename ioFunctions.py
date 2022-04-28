@@ -59,8 +59,8 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     time.sleep(0.4)
     
     #Do some logic to avoid receiving our own signal
-    if rxdevice != "None":
-        rxdevice.disable_rx()
+    #if rxdevice != "None":
+    #    rxdevice.disable_rx()
         
     #Flash on our antenna, send, turn it off
     txdevice.enable_tx()
@@ -70,8 +70,8 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     time.sleep(0.1)    
 
     #And turn rx back on (if provided)
-    if rxdevice != "None":
-        rxdevice.enable_rx()
+    #if rxdevice != "None":
+    #    rxdevice.enable_rx()
         
 def getFileTimeStamp():
     #Returns a string in format 'mmdd_hhmm'

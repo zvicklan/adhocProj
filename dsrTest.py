@@ -129,7 +129,9 @@ while not(testDone):
             removeLinkFromCache(path2Node, badSrcID, badDestID, logging)
             dropMsg = makeMsgRouteDrop(origID, msgID, myID, badDestID, pathFromOrig)
             sendMsg(txdevice, dropMsg, rxdevice, logging, logger)
-
+            #Also mark it so you don't later re-use your own message
+            lastMsgIDs, isNew = checkLastMsg(lastMsgIDs, ROUT_DROP, origID, msgID)
+            
             # Then to keep things interesting, start sending again
             if myID == origID and (myID == 5 or myID == 1): #Send a new route disc
                 newRDmsg = makeMsgRouteDisc(myID, msgIDs[0], myID, 6-myID, []) #send to opposite side
@@ -280,9 +282,11 @@ while not(testDone):
                         logging.info("Received data msg from node " + str(origID))
                         #Send a data msg back!
                         path = path2Node[origID-1]
-                        msgID = msgIDs[2]
-                        msgIDs[2] = (msgIDs[2] + 1) % 16
-                        dataMsg = makeMsgData(myID, msgID, myID, origID, path[1:-1])
+                        logging.info("Cache to reply is " + str(path))
+                        if len(path > 2): #there's no path
+                            msgID = msgIDs[2]
+                            msgIDs[2] = (msgIDs[2] + 1) % 16
+                            dataMsg = makeMsgData(myID, msgID, myID, origID, path[1:-1])
                 
                 else:
                     #Mark this one done (using lastMsg)
