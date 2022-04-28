@@ -149,7 +149,7 @@ while not(testDone):
             continue
 
         #Check if this is an ACK
-        ackedMsg = isAwaitingAck(ackList, rxMsg) #returns 0 if not an ACK
+        ackedMsg = isAwaitedAck(ackList, rxMsg) #returns 0 if not an ACK
         if ackedMsg: 
             #If so, mark it as done
             logging.info("Received ACK msg " + hex(rxMsg) + " for awaiting " + hex(ackedMsg))
