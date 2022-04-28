@@ -130,13 +130,13 @@ while not(testDone):
 
             # Then to keep things interesting, start sending again
             if myID == origID and (myID == 5 or myID == 1): #Send a new route disc
-                msg = makeMsgRouteDisc(myID, msgIDs[0], myID, 6-myID, []) #send to opposite side
+                newRDmsg = makeMsgRouteDisc(myID, msgIDs[0], myID, 6-myID, []) #send to opposite side
                 msgIDs[0] = (msgIDs[0] + 1) % 16
-                sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
+                sendMsg(txdevice, newRDmsg, rxdevice, logging, logger) #auto RX blanking
         else:
             #Re-send it
             logging.info("No ACK for " + hex(reTxMsg) + ". Resending")
-            sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
+            sendMsg(txdevice, reTxMsg, rxdevice, logging, logger) #auto RX blanking
             ackList = updateAckList(ackList, reTxMsg)
 
     # Now see if we have a new msg
