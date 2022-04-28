@@ -117,6 +117,8 @@ while not(testDone):
         #If it's too far gone, we need to mark it out and drop it
         if isDead(ackList, reTxMsg):
             logging.info("No response for " + hex(reTxMsg) + ". Link Dead")
+            ackList = removeAck(ackList, reTxMsg)
+
             #Get the node that didn't respond to us
             origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(reTxMsg)
             wholePath = getWholePath(origID, pathFromOrig, destID)
