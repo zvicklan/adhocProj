@@ -60,12 +60,13 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
         rxdevice.disable_rx()
         
     #Flash on our antenna, send, turn it off
-    txdevice.tx_code(msg, protocol, pulselength)
+    b = msg
+    txdevice.tx_code(b, 1, 350)
 
     #And turn rx back on (if provided)
     if rxdevice != "None":
         rxdevice.enable_rx()
-        
+    
 def getFileTimeStamp():
     #Returns a string in format 'mmdd_hhmm'
     now = datetime.now()
