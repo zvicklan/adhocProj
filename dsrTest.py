@@ -51,6 +51,11 @@ ROUT_REPL = 2
 DATA_MSG = 3
 ROUT_DROP = 4
 
+#Set up my info
+file = open('idNum.txt', 'r')
+line = file.readlines()
+myID = int(line[0])
+
 #Make logging file
 logDir = '../log/'
 os.makedirs(logDir, exist_ok=True)
@@ -58,11 +63,7 @@ filename = getFileTimeStamp() # Because python is the worst: args.filename #sys.
 log = open(logDir + 'log_' + str(myID) + '_' + filename + '.csv', 'w', newline='')
 logger = csv.writer(log)
 
-#Set up my info
-file = open('idNum.txt', 'r')
-line = file.readlines()
-myID = int(line[0])
-
+# And logging for the screen
 file = logging.FileHandler("stdLog_" + str(myID) + '_' + timeStamp + '.csv')
 logging.addHandler(file)
 
