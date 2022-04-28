@@ -116,6 +116,7 @@ while not(testDone):
     if reTxMsg:
         #If it's too far gone, we need to mark it out and drop it
         if isDead(ackList, reTxMsg):
+            logging.info("No response for " + hex(msg) + ". Link Dead")
             #Get the node that didn't respond to us
             origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(reTxMsg)
             wholePath = getWholePath(origID, pathFromOrig, destID)
@@ -134,6 +135,7 @@ while not(testDone):
                 sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
         else:
             #Re-send it
+            logging.info("No ACK for " + hex(msg) + ". Resending")
             sendMsg(txdevice, msg, rxdevice, logging, logger) #auto RX blanking
             ackList = updateAckList(ackList, reTxMsg)
 
