@@ -14,10 +14,23 @@ def logMsg(msg, logger, msgInOut):
     # 1 means "in"
     byteList = msg2Bytes(msg)
     logger.writerow([getTimeStamp()] + [msgInOut] + byteList)
+
+def isBadMsg(origID, msgID, srcID, destID, pathFromOrig):
+    #Checks if any of the IDs are out of range
+    if min(origID, msgID, srcID, destID) == 0:
+        return 1
+    if len(pathFromOrig) > 0:
+        maxVal = max(origID, msgID, srcID, destID, max(pathFromOrig))
+    else:
+        maxVal = max(origID, msgID, srcID, destID)
+    if maxVal > 5:
+        return 1
+    else:
+        return 0
+
     
-#General helper function for going Byte String to Msg
 def bytes2Msg(byteList, logger='None'):
-    
+    #General helper function for going Byte String to Msg
     #Log if desired
     if logger != 'None':
         logMsg(msg, logger, 0) #0 means "out"

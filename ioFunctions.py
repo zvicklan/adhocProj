@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime
 from rpi_rf import RFDevice
 from msgFunctions import *
+from ackFuncs import *
 
 def loadNewMsg(rxdevice, timestamp, logging):
     timestamp = rxdevice.rx_code_timestamp
@@ -43,89 +44,12 @@ def sendAck(txdevice, msg, rxdevice, logging, logger="None"):
     else:
         ackMsg = createAckMsg(msg)
         sendMsg(txdevice, ackMsg, rxdevice, logging, logger)
-    
-def sendMsgWithAck(txdevice, msg, rxdevice, logging, logger="None"):
-    # Awaits an ACK msg with the following
-    #   ACK bit set
-    #   Same orig ID
-    #   Same msg ID
-    #   Self as srcID (same srcID)
-    
-    maxWait = 3 #max time to allow this to wait
-    reTxInterval = 1 #time between retransmits
-    awaitingACK = True
-    timedOut = 0
-    
-    origID, msgID, srcID, destID, hopCount, pathFromOrig = readMsg(msg) #want to match these
-    timestamp = None
-    
-    #Send the first time, then start listening
-    logging.info("sendWithAck sending: " + hex(msg))
-    sendMsg(txdevice, msg, rxdevice, logging, logger)
-    numTx = 1
-    msgType = getMsgType(msg)
-    startTime = datetime.now()
-    lastTx = startTime
-    #Carry out the loop, listening
-    while awaitingACK and not timedOut:
-        #Check for a message
-        if rxdevice.rx_code_timestamp != timestamp:
-            (timestamp, rxMsg, msgType_rx) = loadNewMsg(rxdevice, timestamp, logging)
-            logging.info("sendWithAck received: " + hex(rxMsg)
-                         + ", type " + str(msgType))
-            #Check if it's one we want:
-            if msgType_rx: #!= 0
-                toParse = deAckMsg(rxMsg) #returns rxMsg if rxMsg not an ACK
-                #Log if desired
-                if logger != 'None':
-                    logMsg(rxMsg, logger, 1) # 1 means "in"
-                    
-                origID_rx, msgID_rx, srcID_rx, destID, hopCount, pathFromOrig = readMsg(toParse)
-                #Logic for Route Disc/Route Reply
-                if msgType == 1 and msgType_rx == 2:
-                    if origID == srcID: #Ensure this was my Route Disc
-                        if (origID_rx, msgID_rx) == (origID, msgID): #same msg
-                            imNext = nextInPath(origID, destID, pathFromOrig, myID, srcID_rx)
-                            if imNext:
-                                #It's the same msg! We got it!
-                                awaitingACK = False
-                elif msgType_rx == msgType and isAckMsg(rxMsg):
-                    if (origID, msgID, srcID) == (origID_rx, msgID_rx, srcID_rx):
-                        #It's the same msg! We got it!
-                        awaitingACK = False
-
-        #Check if we want to retransmit
-        if awaitingACK: #Just so we skip this when we find the msg
-            currTime = datetime.now()
-            timeDiff = currTime - startTime
-            txTimeDiff = currTime - lastTx
-            #See if it's time to retransmit
-            if txTimeDiff.total_seconds() > reTxInterval:
-                #but if it's been too many retries, time out
-                if numTx >= maxWait:
-                    logging.info("Delay " + str(timeDiff.total_seconds()) + " Time Out")
-                    timedOut = 1
-                else
-                    logging.info("TX Delay " + str(txTimeDiff.total_seconds()) + " Transmit " + str(numTx))
-                    sendMsg(txdevice, msg, rxdevice, logging, logger)
-                    numTx = numTx + 1
-                    lastTx = datetime.now()
-
-            #And wait a bit
-            time.sleep(0.01)
-             
-    if not awaitingACK:
-        logging.info("sendWithAck recognized ACK msg")
-    else:
-        logging.info("sendWithAck timed out")
-        
-    retVal = 1-timedOut #1 if we were successful, 0 else
-    return retVal
 
 def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     #Takes in the rfdevice and msg (as an int) and sends it out
     protocol = None #Default 1
     pulselength = None #Default 350
+    txLength = 32
     
     logging.info("sendMsg: " + hex(msg))
     #Log if desired
@@ -135,36 +59,22 @@ def sendMsg(txdevice, msg, rxdevice, logging, logger="None"):
     time.sleep(0.4)
     
     #Do some logic to avoid receiving our own signal
-    if rxdevice != "None":
-        rxdevice.disable_rx()
+    #if rxdevice != "None":
+    #    rxdevice.disable_rx()
         
     #Flash on our antenna, send, turn it off
     txdevice.enable_tx()
-    txdevice.tx_code(msg, protocol, pulselength)
+    txdevice.tx_code(msg, protocol, pulselength, txLength)
     txdevice.disable_tx()
-    
-    time.sleep(0.1)
+
+    time.sleep(0.1)    
 
     #And turn rx back on (if provided)
-    if rxdevice != "None":
-        rxdevice.enable_rx()
+    #if rxdevice != "None":
+    #    rxdevice.enable_rx()
         
 def getFileTimeStamp():
     #Returns a string in format 'mmdd_hhmm'
     now = datetime.now()
     timeStamp = now.strftime('%m%d_%H%M%S')
     return timeStamp
-
-def nextInPath(origID, destID, pathFromOrig, node1, node2):
-    #Builds the complete path, then checks if I'm next
-    wholePath = pathFromOrig.copy()
-    wholePath.insert(0, origID)
-    wholePath.append(destID) # Now this is the whole path   
-
-    # We should be right before the sender
-    node1Ind = wholePath.index(node1)
-    node2Ind  = wholePath.index(node2)
-
-    imNext = node2Ind == (node1Ind + 1)
-
-    return imNext
